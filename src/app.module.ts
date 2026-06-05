@@ -1,8 +1,53 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonModule } from './common/common.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guards/jwt.auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
-  imports: [],
+  imports: [
+
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.getOrThrow<string>('DB_HOST'),
+        port: config.getOrThrow<number>('DB_PORT'),
+        username: config.getOrThrow<string>('DB_USERNAME'),
+        password: config.getOrThrow<string>('DB_PASSWORD'),
+        database: config.getOrThrow<string>('DB_NAME'),
+        autoLoadEntities: true,
+        synchronize: config.get<string>('NODE_ENV') !== 'production',
+      }),
+    }),
+
+    CommonModule,
+
+    AuthModule,
+
+    UserModule,
+
+  ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

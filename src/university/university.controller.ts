@@ -28,9 +28,9 @@ export class UniversityController {
   //   return this.universityService.update(+id, updateUniversityDto);
   // }
 
-  @Delete(':id')
-  @Roles(Role.SUPER_ADMIN)
-  remove(@Param('id') id: string) {
-    return this.universityService.remove(+id);
-  }
+  // @Delete(':id')
+  // @Roles(Role.SUPER_ADMIN)
+  // remove(@Param('id') id: string) {
+  //   return this.universityService.remove(+id);
+  // }
 }

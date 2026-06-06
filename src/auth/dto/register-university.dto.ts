@@ -1,12 +1,14 @@
 import { IsEmail, IsString, MinLength, Matches, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
-import { Role } from '../../common/enums/role.enum';
 import { MSG } from '../../common/helpers/validation-messages.helper';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterUniversityDto {
-
+    
+    @ApiProperty({ example: 'pan@google.com' })
     @IsEmail({}, { message: MSG.email() })
     email!: string;
 
+    @ApiProperty({ example: 'Panhawaiano18' })
     @IsString({ message: MSG.string('La contraseña') })
     @MinLength(6, { message: MSG.minLength('La contraseña', 6) })
     @Matches(
@@ -15,18 +17,22 @@ export class RegisterUniversityDto {
     })
     password!: string;
 
+    @ApiProperty({ example: 'Harvard' })
     @IsString({ message: MSG.string('El nombre') })
     @IsNotEmpty({ message: MSG.required('El nombre') })
     name!: string;
 
+    @ApiProperty({ example: '324.25545.23' })
     @IsString({ message: MSG.string('El NIT') })
     @IsNotEmpty({ message: MSG.required('El NIT') })
     nit!: string;
 
+    @ApiPropertyOptional({ example: 'Calle 23a # 14-23 - Armenia Quindio' })
     @IsString({ message: MSG.string('La dirección') })
     @IsOptional()
     address?: string;
 
+    @ApiProperty({ example: '314543234' })
     @IsString({ message: MSG.string('El teléfono') })
     @IsNotEmpty({ message: MSG.required('El teléfono') })
     @MaxLength(15, { message: MSG.maxLength('El teléfono', 15) })

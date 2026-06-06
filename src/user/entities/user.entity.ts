@@ -5,10 +5,12 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import { Role } from '../../common/enums/role.enum';
+import { University } from '../../university/entities/university.entity';
 
 @Entity('users')
 export class User {
@@ -36,7 +38,7 @@ export class User {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-    @DeleteDateColumn({ name: 'deleted_at', select: false })
+    @DeleteDateColumn({ select: false })
     deletedAt?: Date;
 
     @BeforeInsert()
@@ -48,4 +50,10 @@ export class User {
     checkFieldsBeforeUpdate() {
         this.checkFieldsBeforeInsert();   
     }
+
+    @OneToOne(
+        () => University, 
+        (university) => university.user
+    )
+    university?: University;
 }

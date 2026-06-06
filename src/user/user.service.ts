@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 import { User } from './entities/user.entity';
-import { Not, Repository } from 'typeorm';
+import { EntityManager, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserResponseDto } from './dto/user-response.dto';
 import { MSG } from '../common/helpers/validation-messages.helper';
@@ -25,24 +25,19 @@ export class UserService {
    * @param createUserDto 
    * @returns 
    */
-  async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const exists = await this.userRepository.existsBy({
-      email: createUserDto.email
-    });
-    
-    if (exists) {
-      throw new ConflictException(MSG.unique('correo electrónico'));
-    }
- 
+  async create(createUserDto: CreateUserDto) {
+    return this.createWithManager(this.userRepository.manager, createUserDto);
+  }
+
+  async createWithManager(manager: EntityManager, createUserDto: CreateUserDto) {
+
+    const existingUser = await manager.existsBy(User, { email: createUserDto.email });
+    if (existingUser) throw new ConflictException(MSG.unique('correo electrónico'));
+
     const hashedPassword = await this.hasher.hash(createUserDto.password);
- 
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
- 
-    const saved = await this.userRepository.save(user);
-    return new UserResponseDto(saved);
+
+    const user = manager.create(User, { ...createUserDto, password: hashedPassword });
+    return manager.save(user);
   }
 
   /**

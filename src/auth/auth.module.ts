@@ -7,11 +7,13 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserModule } from '../user/user.module';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
+import { UniversityModule } from '../university/university.module';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
+    UniversityModule,
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
 

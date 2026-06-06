@@ -29,16 +29,10 @@ export class CustomValidationPipe implements PipeTransform {
 
     private formatErrors(errors: ValidationError[]): Record<string, string> {
         return errors.reduce((acc, error) => {
-            if (error.children?.length) {
-                const nested = this.formatErrors(error.children);
-                Object.entries(nested).forEach(([key, message]) => {
-                    acc[`${error.property}.${key}`] = message;
-                });
-            } else {
-                // Toma solo el primer mensaje de error del campo
-                const [firstMessage] = Object.values(error.constraints ?? {});
-                acc[error.property] = firstMessage;
-            }
+            // Toma solo el primer mensaje de error del campo
+            const [firstMessage] = Object.values(error.constraints ?? {});
+            acc[error.property] = firstMessage;
+            
             return acc;
         }, {} as Record<string, string>);
     }

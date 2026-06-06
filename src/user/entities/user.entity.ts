@@ -3,6 +3,7 @@ import {
     BeforeUpdate,
     Column,
     CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -34,6 +35,9 @@ export class User {
 
     @UpdateDateColumn()
     updatedAt!: Date;
+
+    @DeleteDateColumn({ name: 'deleted_at', select: false })
+    deletedAt?: Date;
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {

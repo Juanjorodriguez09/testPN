@@ -7,23 +7,24 @@ import {
     MinLength,
 } from 'class-validator';
 import { Role } from '../../common/enums/role.enum';
+import { MSG } from '../../common/helpers/validation-messages.helper';
 
 export class CreateUserDto {
 
-    @IsEmail()
+    @IsEmail({}, { message: MSG.email() })
     email!: string;
 
-    @IsString()
-    @MinLength(6)
+    @IsString({ message: MSG.string('La contraseña') })
+    @MinLength(6, { message: MSG.minLength('La contraseña', 6) })
     @Matches(
         /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-        message: 'The password must have an uppercase, a lowercase letter and a number'
+        message: MSG.password
     })
     password!: string;
 
-    @IsEnum(Role)
+    @IsEnum(Role, { message: MSG.notValidValue('rol') })
     role!: Role;
 
-    @IsBoolean()
+    @IsBoolean({ message: MSG.notValidValue('isActive') })
     isActive!: boolean;
 }

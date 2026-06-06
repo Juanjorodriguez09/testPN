@@ -1,8 +1,5 @@
 import {
-  BadRequestException,
-  ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +9,7 @@ import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserResponseDto } from '../user/dto/user-response.dto';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
+import { MSG } from '../common/helpers/validation-messages.helper';
 
 @Injectable()
 export class AuthService {
@@ -31,13 +29,13 @@ export class AuthService {
 
     const user = await this.userService.findByEmailWithPassword(email.toLowerCase());
 
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) throw new UnauthorizedException(MSG.invalidCredentials);
 
     if ( !user.isActive ) 
-      throw new UnauthorizedException('User inactive, talk with an admin');
+      throw new UnauthorizedException(MSG.inactiveUser);
 
     const passwordMatch = await this.hasher.compare(password, user.password);
-    if (!passwordMatch) throw new UnauthorizedException('Invalid credentials');
+    if (!passwordMatch) throw new UnauthorizedException(MSG.invalidCredentials);
 
     const token = this.generateToken({
       id: user.id,
@@ -45,15 +43,12 @@ export class AuthService {
       role: user.role,
     });
 
+    const { password: pwd, ...loggedUser } = user;
+
     return {
-      user: new UserResponseDto(user),
+      user: loggedUser,
       token
     };
-  }
-
-  async logout(userId: string): Promise<void> {
-    // Invalida el refresh token almacenado
-    // await this.userService.updateRefreshToken(userId, null);
   }
 
   /**

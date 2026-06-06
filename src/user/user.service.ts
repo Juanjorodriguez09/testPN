@@ -3,9 +3,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserResponseDto } from './dto/user-response.dto';
+import { MSG } from '../common/helpers/validation-messages.helper';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
+import { paginate } from '../common/helpers/paginate.helper';
 
 @Injectable()
 export class UserService {
@@ -22,12 +26,12 @@ export class UserService {
    * @returns 
    */
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const exists = await this.userRepository.findOneBy({
-      email: createUserDto.email,
+    const exists = await this.userRepository.existsBy({
+      email: createUserDto.email
     });
     
-    if (exists === null) {
-      throw new ConflictException('Este correo ya está registrado');
+    if (exists) {
+      throw new ConflictException(MSG.unique('correo electrónico'));
     }
  
     const hashedPassword = await this.hasher.hash(createUserDto.password);
@@ -45,9 +49,13 @@ export class UserService {
    * 
    * @returns 
    */
-  async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.userRepository.find();
-    return users.map((user) => new UserResponseDto(user));
+  async findAll(pagination: PaginationDto): Promise<PaginatedResponse<UserResponseDto>> {
+    const result = await paginate(this.userRepository, pagination, {});
+
+    return {
+      ...result,
+      data: result.data.map((user) => new UserResponseDto(user)),
+    };
   }
 
   /**
@@ -57,7 +65,7 @@ export class UserService {
    */
   async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findOneBy({ id });
-    if (!user) throw new NotFoundException(`No se encontró el elemento`);
+    if (!user) throw new NotFoundException(MSG.notFoundById('usuario'));
 
     return new UserResponseDto(user);
   }
@@ -69,16 +77,27 @@ export class UserService {
    * @returns 
    */
   async update(id: string, updateUserDto: UpdateUserDto) {
+
+    // Hashear contraseña si se está actualizando
     if (updateUserDto.password) {
       updateUserDto.password = await this.hasher.hash(updateUserDto.password);
     }
-    
-    const user = await this.userRepository.preload({id, ...updateUserDto});
-    if (!user) throw new NotFoundException(`No se encontró el elemento`);
 
-    const updatedUser = await this.userRepository.save(user);
-    
-    return updatedUser;
+    // Verificar que el usuario existe
+    const user = await this.userRepository.preload({ id, ...updateUserDto });
+    if (!user) throw new NotFoundException(MSG.notFoundById('usuario'));
+
+    // Validar unicidad del email ignorando el usuario actual
+    if (updateUserDto.email) {
+      const emailTaken = await this.userRepository.existsBy({
+        email: updateUserDto.email,
+        id   : Not(id),
+      });
+
+      if (emailTaken) throw new ConflictException(MSG.unique('correo electrónico'));
+    }
+
+    return this.userRepository.save(user);
   }
 
   /**
@@ -86,14 +105,9 @@ export class UserService {
    * @param id 
    * @returns 
    */
-  async remove(id: string): Promise<boolean> {
+  async remove(id: string): Promise<void> {
     const user = await this.findOne(id);
-
-    user.isActive = false;
-
-    await this.userRepository.save(user);
-
-    return true;
+    await this.userRepository.softRemove(user);
   }
 
   /**

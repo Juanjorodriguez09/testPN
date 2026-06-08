@@ -12,6 +12,7 @@ import {
 import { Role } from '../../common/enums/role.enum';
 import { University } from '../../university/entities/university.entity';
 import { Company } from '../../company/entities/company.entity';
+import { Student } from '../../student/entities/student.entity';
 
 @Entity('users')
 export class User {
@@ -65,4 +66,11 @@ export class User {
         { nullable: true }
     )
     company?: Company;
+
+    @OneToOne(
+        () => Student, 
+        (student) => student.user,
+        { nullable: true }
+    )
+    student?: Student;
 }

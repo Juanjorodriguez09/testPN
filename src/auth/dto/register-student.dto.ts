@@ -1,7 +1,6 @@
 import { IsEmail, IsString, MinLength, Matches, IsNotEmpty, IsOptional, MaxLength, IsEnum, IsNumber, IsPositive } from 'class-validator';
 import { MSG } from '../../common/helpers/validation-messages.helper';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IndustryType } from '../../company/enum/industry.enum';
+import { ApiProperty } from '@nestjs/swagger';
 import { Career } from '../../student/enum/career.enum';
 
 export class RegisterStudentDto {

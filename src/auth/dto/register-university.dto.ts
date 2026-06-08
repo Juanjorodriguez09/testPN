@@ -10,9 +10,9 @@ export class RegisterUniversityDto {
 
     @ApiProperty({ example: 'HarvardManagement18' })
     @IsString({ message: MSG.string('La contraseña') })
-    @MinLength(6, { message: MSG.minLength('La contraseña', 6) })
+    @MinLength(8, { message: MSG.minLength('La contraseña', 8) })
     @Matches(
-        /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+        /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&.#_\-])[A-Za-z\d@$!%?&.#_\-]{8,}$/, {
         message: MSG.password
     })
     password!: string;

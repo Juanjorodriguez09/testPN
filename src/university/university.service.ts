@@ -60,8 +60,8 @@ export class UniversityService {
     // Validar unicidad del nit ignorando el registro actual
     if (updateUniversityDto.nit) {
       const nitTaken = await this.universityRepository.existsBy({
-        nit: updateUniversityDto.nit,
-        id   : Not(id),
+        nit : updateUniversityDto.nit,
+        id  : Not(id),
       });
 
       if (nitTaken) throw new ConflictException(MSG.unique('NIT'));

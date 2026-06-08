@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Role } from '../../common/enums/role.enum';
 import { University } from '../../university/entities/university.entity';
+import { Company } from '../../company/entities/company.entity';
 
 @Entity('users')
 export class User {
@@ -53,7 +54,15 @@ export class User {
 
     @OneToOne(
         () => University, 
-        (university) => university.user
+        (university) => university.user,
+        { nullable: true }
     )
     university?: University;
+
+    @OneToOne(
+        () => Company, 
+        (company) => company.user,
+        { nullable: true }
+    )
+    company?: Company;
 }

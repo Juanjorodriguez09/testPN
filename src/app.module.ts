@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt.auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { UniversityModule } from './university/university.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
@@ -39,6 +40,8 @@ import { UniversityModule } from './university/university.module';
     UserModule,
 
     UniversityModule,
+
+    CompanyModule,
 
   ],
   controllers: [],

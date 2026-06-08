@@ -1,14 +1,18 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { IndustryType } from '../enum/industry.enum';
 
-@Entity('universities')
-export class University {
+@Entity('companies')
+export class Company {
 
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column('text')
+    @Column({ type: 'text' })
     name!: string;
+
+    @Column({ type: 'text' })
+    description!: string;
 
     @Column({
         type: 'varchar',
@@ -17,7 +21,13 @@ export class University {
     })
     nit!: string;
 
-    @Column('text', { nullable: true })
+    @Column({
+        type: 'enum',
+        enum: IndustryType
+    })
+    industry!: IndustryType
+
+    @Column({ type: 'text', nullable: true })
     address?: string;
 
     @Column({type: 'varchar', length: 15})
@@ -25,7 +35,7 @@ export class University {
 
     @OneToOne(
         () => User, 
-        (user) => user.university, 
+        (user) => user.company, 
         { eager: true }
     )
     @JoinColumn({ name: 'userId' })

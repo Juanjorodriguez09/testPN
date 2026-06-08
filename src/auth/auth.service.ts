@@ -10,8 +10,10 @@ import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { RegisterUniversityDto } from './dto/register-university.dto';
 import { UniversityService } from '../university/university.service';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { Role } from '../common/enums/role.enum';
+import { RegisterCompanyDto } from './dto/register-company.dto';
+import { CompanyService } from '../company/company.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +21,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly universityService: UniversityService,
+    private readonly companyService: CompanyService,
     private readonly hasher: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -26,47 +29,35 @@ export class AuthService {
   ) {}
 
   async registerUniversity(registerUniversityDto: RegisterUniversityDto) {
-    
     const { email, password, ...universityData } = registerUniversityDto;
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-
-      const user = await this.userService.createWithManager(
-        queryRunner.manager,
-        { email, password, role: Role.UNIVERSITY, isActive: true },
+    return this.withTransaction(async (manager) => {
+      const { user, token } = await this.createUserWithToken(
+        manager, email, password, Role.UNIVERSITY,
       );
 
       const university = await this.universityService.createWithManager(
-        queryRunner.manager,
-        { ...universityData },
-        user,
+        manager, universityData, user,
       );
 
-      await queryRunner.commitTransaction();
-  
-      const token = this.generateToken({
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      });
-  
-      return {
-        user,
-        university,
-        token
-      }
-      
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
+      return { user, university, token };
+    });
+  }
 
-    } finally {
-      await queryRunner.release();
-    }
+  async registerCompany(registerCompanyDto: RegisterCompanyDto) {
+    const { email, password, ...companyData } = registerCompanyDto;
+
+    return this.withTransaction(async (manager) => {
+      const { user, token } = await this.createUserWithToken(
+        manager, email, password, Role.COMPANY,
+      );
+
+      const company = await this.companyService.createWithManager(
+        manager, companyData, user,
+      );
+
+      return { user, company, token };
+    });
   }
 
   async login(email: string, password: string) {
@@ -108,6 +99,43 @@ export class AuthService {
       });
 
     return accessToken;
+  }
+
+  private async withTransaction<T>(operation: (manager: EntityManager) => Promise<T>): Promise<T> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const result = await operation(queryRunner.manager);
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  private async createUserWithToken(
+    manager: EntityManager,
+    email: string,
+    password: string,
+    role: Role,
+  ) {
+    const user = await this.userService.createWithManager(
+      manager,
+      { email, password, role, isActive: true },
+    );
+
+    const token = this.generateToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return { user, token };
   }
 
 }

@@ -9,6 +9,7 @@ import { UserModule } from '../user/user.module';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 import { UniversityModule } from '../university/university.module';
 import { CompanyModule } from '../company/company.module';
+import { StudentModule } from '../student/student.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CompanyModule } from '../company/company.module';
     PassportModule,
     UniversityModule,
     CompanyModule,
+    StudentModule,
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
 

@@ -14,6 +14,8 @@ import { DataSource, EntityManager } from 'typeorm';
 import { Role } from '../common/enums/role.enum';
 import { RegisterCompanyDto } from './dto/register-company.dto';
 import { CompanyService } from '../company/company.service';
+import { RegisterStudentDto } from './dto';
+import { StudentService } from '../student/student.service';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +24,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly universityService: UniversityService,
     private readonly companyService: CompanyService,
+    private readonly studentService: StudentService,
     private readonly hasher: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -57,6 +60,22 @@ export class AuthService {
       );
 
       return { user, company, token };
+    });
+  }
+
+  async registerStudent(registerStudentDto: RegisterStudentDto) {
+    const { email, password, ...studentData } = registerStudentDto;
+
+    return this.withTransaction(async (manager) => {
+      const { user, token } = await this.createUserWithToken(
+        manager, email, password, Role.STUDENT,
+      );
+
+      const student = await this.studentService.createWithManager(
+        manager, studentData, user,
+      );
+
+      return { user, student, token };
     });
   }
 

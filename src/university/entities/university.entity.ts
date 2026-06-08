@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { Student } from '../../student/entities/student.entity';
 
 @Entity('universities')
 export class University {
@@ -30,6 +31,12 @@ export class University {
     )
     @JoinColumn({ name: 'userId' })
     user!: User;
+
+    @OneToMany(
+        () => Student,
+        (student) => student.university
+    )
+    students?: Student[]
 
     @CreateDateColumn()
     createdAt!: Date;

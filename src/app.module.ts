@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './auth/guards/jwt.auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { UniversityModule } from './university/university.module';
 import { CompanyModule } from './company/company.module';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -42,6 +43,8 @@ import { CompanyModule } from './company/company.module';
     UniversityModule,
 
     CompanyModule,
+
+    StudentModule,
 
   ],
   controllers: [],

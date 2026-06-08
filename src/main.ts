@@ -19,6 +19,11 @@ async function bootstrap() {
     })
   );
 
+   app.enableCors({
+    origin: process.env.FRONT_URL ?? 'http://localhost:4200',
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Konekt')
     .setDescription('Main API for the Konekt web platform')

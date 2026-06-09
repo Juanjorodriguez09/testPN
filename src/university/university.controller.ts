@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UniversityService } from './university.service';
 import { UpdateUniversityDto } from './dto/update-university.dto';
-import { Roles } from '../common/decorators';
+import { Public, Roles } from '../common/decorators';
 import { Role } from '../common/enums/role.enum';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
@@ -13,6 +13,7 @@ export class UniversityController {
   ) {}
 
   @Get()
+  @Public()
   findAll( @Query() pagination: PaginationDto ) {
     return this.universityService.findAll(pagination);
   }

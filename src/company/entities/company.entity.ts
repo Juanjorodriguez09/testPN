@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { IndustryType } from '../enum/industry.enum';
+import { IndustryType } from '../enum/industry-type.enum';
 import { Vacancie } from '../../vacancie/entities/vacancie.entity';
 
 @Entity('companies')

@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional, MaxLength, IsEnum } from "class-validator";
 import { MSG } from "../../common/helpers/validation-messages.helper";
-import { IndustryType } from "../enum/industry.enum";
+import { IndustryType } from "../enum/industry-type.enum";
 
 
 export class CreateCompanyDto {

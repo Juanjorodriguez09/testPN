@@ -1,7 +1,7 @@
 import { IsEmail, IsString, MinLength, Matches, IsNotEmpty, IsOptional, MaxLength, IsEnum } from 'class-validator';
 import { MSG } from '../../common/helpers/validation-messages.helper';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IndustryType } from '../../company/enum/industry.enum';
+import { IndustryType } from '../../company/enum/industry-type.enum';
 
 export class RegisterCompanyDto {
     

@@ -10,6 +10,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
 import { UniversityModule } from './university/university.module';
 import { CompanyModule } from './company/company.module';
 import { StudentModule } from './student/student.module';
+import { VacancieModule } from './vacancie/vacancie.module';
 
 @Module({
   imports: [
@@ -45,6 +46,8 @@ import { StudentModule } from './student/student.module';
     CompanyModule,
 
     StudentModule,
+
+    VacancieModule,
 
   ],
   controllers: [],

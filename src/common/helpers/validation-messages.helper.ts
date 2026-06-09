@@ -16,7 +16,7 @@ export const MSG = {
   isUrl         : (field: string) => `${field} debe ser una URL válida`,
   isUUID        : (field: string) => `${field} debe ser un UUID válido`,
   notValidValue : (field: string) => `El valor de ${field} no es válido`,
-  password      : () => 'La contraseña debe tener al menos una mayúscula, una minúscula y un número',
+  password      : () => 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un caracter especial',
 
   // Unicidad y conflictos
   unique        : (field: string) => `Ya existe un registro con ese ${field}`,

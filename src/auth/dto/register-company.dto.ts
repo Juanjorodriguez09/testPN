@@ -1,7 +1,7 @@
 import { IsEmail, IsString, MinLength, Matches, IsNotEmpty, IsOptional, MaxLength, IsEnum } from 'class-validator';
 import { MSG } from '../../common/helpers/validation-messages.helper';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IndustryType } from '../../company/enum/industry.enum';
+import { IndustryType } from '../../company/enum/industry-type.enum';
 
 export class RegisterCompanyDto {
     
@@ -11,9 +11,9 @@ export class RegisterCompanyDto {
 
     @ApiProperty({ example: 'IBMManagement18' })
     @IsString({ message: MSG.string('La contraseña') })
-    @MinLength(6, { message: MSG.minLength('La contraseña', 6) })
+    @MinLength(8, { message: MSG.minLength('La contraseña', 8) })
     @Matches(
-        /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/, {
         message: MSG.password
     })
     password!: string;

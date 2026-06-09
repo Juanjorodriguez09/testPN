@@ -1,7 +1,6 @@
 import { IsEmail, IsString, MinLength, Matches, IsNotEmpty, IsOptional, MaxLength, IsEnum, IsNumber, IsPositive } from 'class-validator';
 import { MSG } from '../../common/helpers/validation-messages.helper';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IndustryType } from '../../company/enum/industry.enum';
+import { ApiProperty } from '@nestjs/swagger';
 import { Career } from '../../student/enum/career.enum';
 
 export class RegisterStudentDto {
@@ -12,9 +11,9 @@ export class RegisterStudentDto {
 
     @ApiProperty({ example: 'PipeRojas14' })
     @IsString({ message: MSG.string('La contraseña') })
-    @MinLength(6, { message: MSG.minLength('La contraseña', 6) })
+    @MinLength(8, { message: MSG.minLength('La contraseña', 8) })
     @Matches(
-        /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/, {
         message: MSG.password
     })
     password!: string;
@@ -41,13 +40,16 @@ export class RegisterStudentDto {
     @IsNotEmpty({ message: MSG.required('El teléfono') })
     phone!: string;
 
+    @ApiProperty({ example: Career.SoftwareEngineering })
     @IsEnum(Career, { message: MSG.notValidValue('carrera') })
     career!: Career;
 
+    @ApiProperty({ example: 6 })
     @IsPositive({ message: MSG.isPositive('El semestre') })
     @IsNumber({}, { message: MSG.isNumber('El semestre') })
     semester!: number;
 
+    @ApiProperty({ example: 1 })
     @IsPositive({ message: MSG.isPositive('La universidad') })
     @IsNumber({}, { message: MSG.isNumber('La universidad') })
     universityId!: number;

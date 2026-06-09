@@ -11,13 +11,18 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
-    new CustomValidationPipe(),
+    // new CustomValidationPipe(),
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true
     })
   );
+
+   app.enableCors({
+    origin: process.env.FRONT_URL ?? 'http://localhost:4200',
+    credentials: true,
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Konekt')

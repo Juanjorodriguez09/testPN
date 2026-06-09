@@ -40,13 +40,16 @@ export class RegisterStudentDto {
     @IsNotEmpty({ message: MSG.required('El teléfono') })
     phone!: string;
 
+    @ApiProperty({ example: Career.SoftwareEngineering })
     @IsEnum(Career, { message: MSG.notValidValue('carrera') })
     career!: Career;
 
+    @ApiProperty({ example: 6 })
     @IsPositive({ message: MSG.isPositive('El semestre') })
     @IsNumber({}, { message: MSG.isNumber('El semestre') })
     semester!: number;
 
+    @ApiProperty({ example: 1 })
     @IsPositive({ message: MSG.isPositive('La universidad') })
     @IsNumber({}, { message: MSG.isNumber('La universidad') })
     universityId!: number;

@@ -13,7 +13,7 @@ export class RegisterCompanyDto {
     @IsString({ message: MSG.string('La contraseña') })
     @MinLength(8, { message: MSG.minLength('La contraseña', 8) })
     @Matches(
-        /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&.#_\-])[A-Za-z\d@$!%?&.#_\-]{8,}$/, {
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/, {
         message: MSG.password
     })
     password!: string;

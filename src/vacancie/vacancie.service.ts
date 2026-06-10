@@ -19,10 +19,16 @@ export class VacancieService {
     private readonly companyService: CompanyService
   ) {}
 
+  /**
+   * Crea una nueva vacante asociada a una empresa.
+   * @param createVacancieDto - Datos de la vacante (incluye `companyId`).
+   * @returns La entidad `Vacancie` creada.
+   */
   async create(createVacancieDto: CreateVacancieDto) {
-    
+    // Obtener la empresa relacionada; `findOne` lanzará NotFound si no existe
     const company = await this.companyService.findOne(createVacancieDto.companyId);
 
+    // Crear la entidad vacante con la relación asignada
     const vacancie = this.vacancieRepository.create({
       ...createVacancieDto,
       company
@@ -32,6 +38,11 @@ export class VacancieService {
 
   }
 
+  /**
+   * Obtiene vacantes paginadas.
+   * @param pagination - Parámetros de paginación.
+   * @returns Respuesta paginada con entidades `Vacancie`.
+   */
   async findAll(pagination: PaginationDto): Promise<PaginatedResponse<Vacancie>> {
     const result = await paginate(this.vacancieRepository, pagination, {});
 
@@ -41,6 +52,12 @@ export class VacancieService {
     };
   }
 
+  /**
+   * Busca una vacante por id.
+   * @param id - Identificador numérico de la vacante.
+   * @returns La entidad `Vacancie` encontrada.
+   * @throws NotFoundException si no existe.
+   */
   async findOne(id: number) {
     const vacancie = await this.vacancieRepository.findOneBy({ id });
     if (!vacancie) throw new NotFoundException(MSG.notFoundById('vacante'));
@@ -48,6 +65,13 @@ export class VacancieService {
     return vacancie;
   }
 
+  /**
+   * Actualiza una vacante.
+   * @param id - Identificador de la vacante a actualizar.
+   * @param updateVacancieDto - Datos a actualizar (puede incluir `companyId`).
+   * @returns La entidad `Vacancie` actualizada.
+   * @throws NotFoundException si no existe la vacante.
+   */
   async update(id: number, updateVacancieDto: UpdateVacancieDto) {
     const { companyId, ...vacancieData } = updateVacancieDto;
 
@@ -65,6 +89,10 @@ export class VacancieService {
     return this.vacancieRepository.save(vacancie);
   }
 
+  /**
+   * Elimina (soft remove) una vacante por id.
+   * @param id - Identificador de la vacante.
+   */
   async remove(id: number) {
     const vacancie = await this.findOne(id);
     await this.vacancieRepository.softRemove(vacancie);

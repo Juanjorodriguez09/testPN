@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "../../user/entities/user.entity";
 import { Career } from "../enum/career.enum";
 import { University } from "../../university/entities/university.entity";
+import { Application } from "../../application/entities/application.entity";
 
 
 @Entity('students')
@@ -47,6 +48,12 @@ export class Student {
     )
     @JoinColumn({ name: 'universityId' })
     university?: University;
+
+    @OneToMany(
+        () => Application,
+        (application) => application.student
+    )
+    applications?: Application[]
 
     @CreateDateColumn()
     createdAt!: Date;

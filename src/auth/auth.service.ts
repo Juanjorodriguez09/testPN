@@ -83,13 +83,13 @@ export class AuthService {
 
     const user = await this.userService.findByEmailWithPassword(email.toLowerCase());
 
-    if (!user) throw new UnauthorizedException(MSG.invalidCredentials);
+    if (!user) throw new UnauthorizedException(MSG.invalidCredentials());
 
     if ( !user.isActive ) 
-      throw new UnauthorizedException(MSG.inactiveUser);
+      throw new UnauthorizedException(MSG.inactiveUser());
 
     const passwordMatch = await this.hasher.compare(password, user.password);
-    if (!passwordMatch) throw new UnauthorizedException(MSG.invalidCredentials);
+    if (!passwordMatch) throw new UnauthorizedException(MSG.invalidCredentials());
 
     const token = this.generateToken({
       id: user.id,
@@ -126,12 +126,16 @@ export class AuthService {
     await queryRunner.startTransaction();
 
     try {
+
       const result = await operation(queryRunner.manager);
       await queryRunner.commitTransaction();
       return result;
+
     } catch (error) {
+
       await queryRunner.rollbackTransaction();
       throw error;
+
     } finally {
       await queryRunner.release();
     }

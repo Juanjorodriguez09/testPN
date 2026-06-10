@@ -21,7 +21,7 @@ export class CreateUserDto {
     @MinLength(6, { message: MSG.minLength('La contraseña', 6) })
     @Matches(
         /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-        message: MSG.password
+        message: MSG.password()
     })
     password!: string;
 

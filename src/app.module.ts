@@ -11,6 +11,7 @@ import { UniversityModule } from './university/university.module';
 import { CompanyModule } from './company/company.module';
 import { StudentModule } from './student/student.module';
 import { VacancieModule } from './vacancie/vacancie.module';
+import { ApplicationModule } from './application/application.module';
 
 @Module({
   imports: [
@@ -48,6 +49,8 @@ import { VacancieModule } from './vacancie/vacancie.module';
     StudentModule,
 
     VacancieModule,
+
+    ApplicationModule,
 
   ],
   controllers: [],

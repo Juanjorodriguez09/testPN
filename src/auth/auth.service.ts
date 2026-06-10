@@ -127,11 +127,18 @@ export class AuthService {
       role: user.role,
     });
 
-    const { password: pwd, ...loggedUser } = user;
+    // Selecciona el perfil según el rol y elimina las relaciones individuales
+    const profileMap: Record<string, any> = {
+      university : user.university,
+      company    : user.company,
+      student    : user.student,
+    };
+
+    const { password: pwd, university, company, student, ...rest } = user;
 
     return {
-      user: loggedUser,
-      token
+      user: { ...rest, profile: profileMap[user.role] ?? null },
+      token,
     };
   }
 

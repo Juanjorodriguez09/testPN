@@ -13,7 +13,8 @@ import { CompanyModule } from '../company/company.module';
   controllers: [VacancieController],
   providers: [VacancieService],
   exports: [
-    TypeOrmModule
+    TypeOrmModule,
+    VacancieService
   ]
 })
 export class VacancieModule {}

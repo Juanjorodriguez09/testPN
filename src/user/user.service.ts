@@ -126,12 +126,15 @@ export class UserService {
    * @returns `User` con password seleccionado o `null` si no existe.
    */
   async findByEmailWithPassword(email: string): Promise<User | null> {
-    // Obtener el usuario incluyendo la contraseña (no seleccionada por defecto)
-    return this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.password')
-      .where('user.email = :email', { email })
-      .getOne();
+    return this.userRepository.findOne({
+      where: { email },
+      select: { password: true, id: true, email: true, role: true, isActive: true },
+      relations: {
+        university: true,
+        student: true,
+        company: true
+      },
+    });
   }
 
 }

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CONSTANTS_REGISTRY } from './constants.registry';
+import { MSG } from './helpers/validation-messages.helper';
 
 @Injectable()
 export class CommonService {
@@ -9,7 +10,7 @@ export class CommonService {
 
     if (!enumObject) {
       throw new NotFoundException(
-        `Constant '${constantName}' not found.`,
+        MSG.notFound(constantName),
       );
     }
 

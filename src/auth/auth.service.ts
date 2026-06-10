@@ -31,9 +31,17 @@ export class AuthService {
     private readonly dataSource: DataSource,
   ) {}
 
+  /**
+   * Registra una nueva universidad junto a su usuario relacionado.
+   * Crea el usuario y la entidad `University` dentro de una transacción.
+   * @param registerUniversityDto - DTO con `email`, `password` y datos de universidad.
+   * @returns Objeto con `user`, `university` y `token`.
+   */
   async registerUniversity(registerUniversityDto: RegisterUniversityDto) {
+    // Separar credenciales del payload de la universidad
     const { email, password, ...universityData } = registerUniversityDto;
 
+    // Ejecutar la creación dentro de una transacción para mantener consistencia
     return this.withTransaction(async (manager) => {
       const { user, token } = await this.createUserWithToken(
         manager, email, password, Role.UNIVERSITY,
@@ -47,9 +55,17 @@ export class AuthService {
     });
   }
 
+  /**
+   * Registra una nueva compañía junto a su usuario relacionado.
+   * La operación se realiza dentro de una transacción.
+   * @param registerCompanyDto - DTO con `email`, `password` y datos de la compañía.
+   * @returns Objeto con `user`, `company` y `token`.
+   */
   async registerCompany(registerCompanyDto: RegisterCompanyDto) {
+    // Extraer email y password del DTO
     const { email, password, ...companyData } = registerCompanyDto;
 
+    // Usar transacción para crear usuario y compañía de forma atómica
     return this.withTransaction(async (manager) => {
       const { user, token } = await this.createUserWithToken(
         manager, email, password, Role.COMPANY,
@@ -63,7 +79,14 @@ export class AuthService {
     });
   }
 
+  /**
+   * Registra un nuevo estudiante junto a su usuario relacionado.
+   * Se ejecuta en una transacción que crea `User` y `Student`.
+   * @param registerStudentDto - DTO con `email`, `password` y datos del estudiante.
+   * @returns Objeto con `user`, `student` y `token`.
+   */
   async registerStudent(registerStudentDto: RegisterStudentDto) {
+    // Separar credenciales del DTO del estudiante
     const { email, password, ...studentData } = registerStudentDto;
 
     return this.withTransaction(async (manager) => {
@@ -79,17 +102,24 @@ export class AuthService {
     });
   }
 
+  /**
+   * Realiza login verificando credenciales y estado del usuario.
+   * @param email - Email del usuario.
+   * @param password - Contraseña en texto plano para comparar.
+   * @returns Objeto con `user` (sin password) y `token` JWT.
+   * @throws `UnauthorizedException` si las credenciales son inválidas o el usuario está inactivo.
+   */
   async login(email: string, password: string) {
 
     const user = await this.userService.findByEmailWithPassword(email.toLowerCase());
 
-    if (!user) throw new UnauthorizedException(MSG.invalidCredentials);
+    if (!user) throw new UnauthorizedException(MSG.invalidCredentials());
 
     if ( !user.isActive ) 
-      throw new UnauthorizedException(MSG.inactiveUser);
+      throw new UnauthorizedException(MSG.inactiveUser());
 
     const passwordMatch = await this.hasher.compare(password, user.password);
-    if (!passwordMatch) throw new UnauthorizedException(MSG.invalidCredentials);
+    if (!passwordMatch) throw new UnauthorizedException(MSG.invalidCredentials());
 
     const token = this.generateToken({
       id: user.id,
@@ -106,10 +136,9 @@ export class AuthService {
   }
 
   /**
-   * Genera el token a partir del payload
-   * 
-   * @param payload 
-   * @returns 
+   * Genera un JWT a partir del payload.
+   * @param payload - Objeto con `id`, `email` y `role` del usuario.
+   * @returns Token firmado (string).
    */
   private generateToken(payload: JwtPayload): string {
     const accessToken = this.jwtService.sign(payload, {
@@ -120,34 +149,57 @@ export class AuthService {
     return accessToken;
   }
 
+  /**
+   * Ejecuta una operación dentro de una transacción de TypeORM.
+   * @param operation - Función que recibe un `EntityManager` y realiza operaciones sobre la BD.
+   * @returns El resultado de la operación ejecutada dentro de la transacción.
+   * @throws Re-lanza cualquier error ocurrido durante la operación tras hacer rollback.
+   */
   private async withTransaction<T>(operation: (manager: EntityManager) => Promise<T>): Promise<T> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+
+      // Ejecutar la operación pasando el EntityManager de la transacción
       const result = await operation(queryRunner.manager);
+      // Confirmar la transacción si todo salió bien
       await queryRunner.commitTransaction();
       return result;
+
     } catch (error) {
+
+      // Revertir cambios en caso de error
       await queryRunner.rollbackTransaction();
       throw error;
+
     } finally {
       await queryRunner.release();
     }
   }
 
+  /**
+   * Crea un usuario genera su token JWT.
+   * @param manager - EntityManager asociado a la transacción.
+   * @param email - Email del nuevo usuario.
+   * @param password - Contraseña
+   * @param role - Rol asignado al usuario.
+   * @returns Objeto con `user` creado y `token` JWT.
+   */
   private async createUserWithToken(
     manager: EntityManager,
     email: string,
     password: string,
     role: Role,
   ) {
+    // Crear el usuario usando el manager de la transacción
     const user = await this.userService.createWithManager(
       manager,
       { email, password, role, isActive: true },
     );
 
+    // Generar token para el nuevo usuario
     const token = this.generateToken({
       id: user.id,
       email: user.email,

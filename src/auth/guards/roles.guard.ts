@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/enums/role.enum';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { MSG } from '../../common/helpers/validation-messages.helper';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -27,7 +28,7 @@ export class RolesGuard implements CanActivate {
         }
         
         throw new ForbiddenException(
-            'No tienes los roles o permisos necesarios para hacer esta acción'
+            MSG.unauthorized()
         );
     }
 }

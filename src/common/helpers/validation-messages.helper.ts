@@ -27,10 +27,11 @@ export const MSG = {
   notFoundById  : (entity: string) => `No se encontró ningún ${entity} con ese ID`,
 
   // Autorización
-  unauthorized  : () => 'No tienes permisos para realizar esta acción',
+  unauthorized  : () => 'No tienes los roles o permisos necesarios para hacer esta acción',
   forbidden     : () => 'Acceso denegado',
   invalidCredentials: () => 'Correo o contraseña incorrectos',
   inactiveUser: () => 'Usuario inactivo, comunícate con un administrador',
+  invalidToken: () => 'Token inválido',
 
   // Relaciones
   relationNotFound: (relation: string) => `La relación con ${relation} no existe`,

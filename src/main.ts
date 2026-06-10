@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { CustomValidationPipe } from './common/pipes/validation.pipe';
+import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,13 +11,15 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
-    // new CustomValidationPipe(),
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-      transform: true
+      transform: true,
+      exceptionFactory: (errors) => new BadRequestException(errors),
     })
   );
+
+  app.useGlobalFilters(new ValidationExceptionFilter());
 
    app.enableCors({
     origin: process.env.FRONT_URL ?? 'http://localhost:4200',

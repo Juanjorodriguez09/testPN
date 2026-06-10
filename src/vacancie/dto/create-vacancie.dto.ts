@@ -34,7 +34,7 @@ export class CreateVacancieDto {
 
     @ApiProperty({ example: 'Remoto' })
     @IsEnum(Modality, { message: MSG.notValidValue('modalidad') })
-    modalitiy!: Modality;
+    modality!: Modality;
 
     @ApiProperty({ example: 'Activa' })
     @IsEnum(VacancieStatus, { message: MSG.notValidValue('estado') })

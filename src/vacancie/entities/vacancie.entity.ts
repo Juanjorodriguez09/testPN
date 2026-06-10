@@ -27,7 +27,7 @@ export class Vacancie {
     location!: string;
 
     @Column({ type: 'enum', enum: Modality })
-    modalitiy!: Modality;
+    modality!: Modality;
 
     @Column({ type: 'enum', enum: VacancieStatus })
     status!: VacancieStatus;

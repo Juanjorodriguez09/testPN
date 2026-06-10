@@ -49,14 +49,18 @@ export class VacancieService {
   }
 
   async update(id: number, updateVacancieDto: UpdateVacancieDto) {
+    const { companyId, ...vacancieData } = updateVacancieDto;
 
-    // Valida existencia de la empresa
-    if (updateVacancieDto.companyId) {
-      await this.companyService.findOne(updateVacancieDto.companyId);
-    }
-    
-    const vacancie = await this.vacancieRepository.preload({ id, ...updateVacancieDto });
+    // Valida existencia de la empresa y obtiene la entidad
+    const company = companyId
+      ? await this.companyService.findOne(companyId)
+      : undefined;
+
+    const vacancie = await this.vacancieRepository.preload({ id, ...vacancieData });
     if (!vacancie) throw new NotFoundException(MSG.notFoundById('vacante'));
+
+    // Asigna la relación como objeto
+    if (company) vacancie.company = company;
 
     return this.vacancieRepository.save(vacancie);
   }

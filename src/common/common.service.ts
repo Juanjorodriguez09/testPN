@@ -29,13 +29,22 @@ export class CommonService {
     return Object.values(enumObject);
   }
 
+  /**
+   * Devuelve los registros paginados
+   * 
+   * @param queryBuilder 
+   * @param paginationDto 
+   * @returns 
+   */
   async paginate<T extends ObjectLiteral>( queryBuilder: SelectQueryBuilder<T>, paginationDto: PaginationDto ): Promise<PaginatedResponse<T>|T[]> {
 
+    // Ordena de manera descendente
     queryBuilder.orderBy(
       `${queryBuilder.alias}.createdAt`,
       'DESC',
     );
 
+    // Obtiene todos los registros sin paginar si lo solicita el cliente
     if (paginationDto.all) {
       return queryBuilder.getMany();
     }

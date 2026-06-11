@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { StudentFiltersDto } from './dto/student-filters.dto';
 
 @Controller('student')
 export class StudentController {
@@ -12,8 +12,8 @@ export class StudentController {
   ) {}
 
   @Get()
-  findAll( @Query() pagination: PaginationDto ) {
-    return this.studentService.findAll(pagination);
+  findAll( @Query() filters: StudentFiltersDto ) {
+    return this.studentService.findAll(filters);
   }
 
   @Get(':id')

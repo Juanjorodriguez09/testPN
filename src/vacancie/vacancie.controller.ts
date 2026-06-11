@@ -4,7 +4,6 @@ import { CreateVacancieDto } from './dto/create-vacancie.dto';
 import { UpdateVacancieDto } from './dto/update-vacancie.dto';
 import { Roles } from '../common/decorators';
 import { Role } from '../common/enums/role.enum';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { VacancieFiltersDto } from './dto/vacancie-filters.dto';
 
 @Controller('vacancie')

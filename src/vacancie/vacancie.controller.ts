@@ -5,6 +5,7 @@ import { UpdateVacancieDto } from './dto/update-vacancie.dto';
 import { Roles } from '../common/decorators';
 import { Role } from '../common/enums/role.enum';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { VacancieFiltersDto } from './dto/vacancie-filters.dto';
 
 @Controller('vacancie')
 export class VacancieController {
@@ -20,8 +21,8 @@ export class VacancieController {
   }
 
   @Get()
-  findAll( @Query() pagination: PaginationDto ) {
-    return this.vacancieService.findAll(pagination);
+  findAll( @Query() filters: VacancieFiltersDto ) {
+    return this.vacancieService.findAll(filters);
   }
 
   @Get(':id')

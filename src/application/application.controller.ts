@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe 
 import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { Role } from '../common/enums/role.enum';
 import { Roles } from '../common/decorators';
+import { ApplicationFiltersDto } from './dto/application-filters.dto';
 
 @Controller('application')
 export class ApplicationController {
@@ -17,8 +17,8 @@ export class ApplicationController {
   }
 
   @Get()
-  findAll( @Query() pagination: PaginationDto ) {
-    return this.applicationService.findAll(pagination);
+  findAll( @Query() filters: ApplicationFiltersDto ) {
+    return this.applicationService.findAll(filters);
   }
 
   @Get(':id')

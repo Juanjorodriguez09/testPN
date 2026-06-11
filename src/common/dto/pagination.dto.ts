@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { MSG } from '../helpers/validation-messages.helper';
 
 export class PaginationDto {
@@ -15,4 +15,9 @@ export class PaginationDto {
   @Min(1,   { message: MSG.min('per_page', 1) })
   @Max(100, { message: MSG.max('per_page', 100) })
   per_page: number = 10;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  all = false;
 }

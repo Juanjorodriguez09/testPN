@@ -5,15 +5,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Application } from './entities/application.entity';
 import { StudentModule } from '../student/student.module';
 import { VacancieModule } from '../vacancie/vacancie.module';
+import { CommonModule } from '../common/common.module';
+import { ApplicationFilterBuilder } from './filters/application-filter.builder';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ Application ]),
     StudentModule,
-    VacancieModule
+    VacancieModule,
+    CommonModule
   ],
   controllers: [ApplicationController],
-  providers: [ApplicationService],
+  providers: [ApplicationService, ApplicationFilterBuilder],
   exports: [
     TypeOrmModule
   ]

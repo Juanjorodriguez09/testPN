@@ -15,7 +15,7 @@ export class ApplicationFilterBuilder implements FilterBuilder<Application, Appl
         'student',
     );
 
-    queryBuilder.leftJoin(
+    queryBuilder.leftJoinAndSelect(
         'application.vacancie',
         'vacancie',
     );

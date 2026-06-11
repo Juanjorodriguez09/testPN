@@ -4,8 +4,6 @@ import { UpdateVacancieDto } from './dto/update-vacancie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vacancie } from './entities/vacancie.entity';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { paginate } from '../common/helpers/paginate.helper';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { CompanyService } from '../company/company.service';
 import { MSG } from '../common/helpers/validation-messages.helper';

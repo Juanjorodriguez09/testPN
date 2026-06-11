@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMa
 import { User } from '../../user/entities/user.entity';
 import { IndustryType } from '../enum/industry-type.enum';
 import { Vacancie } from '../../vacancie/entities/vacancie.entity';
+import { Partnership } from '../../partnership/entities/partnership.entity';
 
 @Entity('companies')
 export class Company {
@@ -47,6 +48,12 @@ export class Company {
         (vacancie) => vacancie.company
     )
     vacancies?: Vacancie[]
+
+    @OneToMany(
+        () => Partnership,
+        (partnership) => partnership.company
+    )
+    partnerships?: Partnership[]
 
     @CreateDateColumn()
     createdAt!: Date;

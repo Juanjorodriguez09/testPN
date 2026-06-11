@@ -10,6 +10,9 @@ import { Repository } from 'typeorm';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { StudentService } from '../student/student.service';
 import { VacancieService } from '../vacancie/vacancie.service';
+import { CommonService } from '../common/common.service';
+import { ApplicationFiltersDto } from './dto/application-filters.dto';
+import { ApplicationFilterBuilder } from './filters/application-filter.builder';
 
 @Injectable()
 export class ApplicationService {
@@ -18,7 +21,9 @@ export class ApplicationService {
     @InjectRepository(Application)
     private readonly applicationRepository: Repository<Application>,
     private readonly studentService: StudentService,
-    private readonly vacancieService: VacancieService
+    private readonly vacancieService: VacancieService,
+    private readonly commonService: CommonService,
+    private readonly filterBuilder: ApplicationFilterBuilder,
   ) {}
 
   /**
@@ -47,16 +52,17 @@ export class ApplicationService {
 
   /**
    * Obtiene postulaciones paginadas.
-   * @param pagination - Parámetros de paginación.
+   * @param filters - Filtros.
    * @returns Respuesta paginada con entidades `Application`.
    */
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponse<Application>> {
-    const result = await paginate(this.applicationRepository, pagination, {});
+  async findAll(filters: ApplicationFiltersDto): Promise<PaginatedResponse<Application>|Application[]> {
+    
+    let queryBuilder = this.applicationRepository.createQueryBuilder('application');
 
-    return {
-      ...result,
-      data: result.data,
-    };
+    queryBuilder = this.filterBuilder.apply(queryBuilder, filters);
+
+    return this.commonService.paginate(queryBuilder, filters)
+
   }
 
   /**

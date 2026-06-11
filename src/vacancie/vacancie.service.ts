@@ -4,11 +4,12 @@ import { UpdateVacancieDto } from './dto/update-vacancie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vacancie } from './entities/vacancie.entity';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { paginate } from '../common/helpers/paginate.helper';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { CompanyService } from '../company/company.service';
 import { MSG } from '../common/helpers/validation-messages.helper';
+import { VacancieFiltersDto } from './dto/vacancie-filters.dto';
+import { VacancieFilterBuilder } from './filters/vacancie-filter.builder';
+import { CommonService } from '../common/common.service';
 
 @Injectable()
 export class VacancieService {
@@ -16,7 +17,9 @@ export class VacancieService {
   constructor(
     @InjectRepository(Vacancie)
     private readonly vacancieRepository: Repository<Vacancie>,
-    private readonly companyService: CompanyService
+    private readonly companyService: CompanyService,
+    private readonly commonService: CommonService,
+    private readonly filterBuilder: VacancieFilterBuilder,
   ) {}
 
   /**
@@ -40,16 +43,16 @@ export class VacancieService {
 
   /**
    * Obtiene vacantes paginadas.
-   * @param pagination - Parámetros de paginación.
+   * @param filters - Filtros.
    * @returns Respuesta paginada con entidades `Vacancie`.
    */
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponse<Vacancie>> {
-    const result = await paginate(this.vacancieRepository, pagination, {});
+  async findAll(filters: VacancieFiltersDto): Promise<PaginatedResponse<Vacancie>|Vacancie[]> {
 
-    return {
-      ...result,
-      data: result.data,
-    };
+    let queryBuilder = this.vacancieRepository.createQueryBuilder('vacancie');
+
+    queryBuilder = this.filterBuilder.apply(queryBuilder, filters);
+
+    return this.commonService.paginate(queryBuilder, filters)
   }
 
   /**

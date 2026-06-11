@@ -6,10 +6,11 @@ import { Student } from './entities/student.entity';
 import { EntityManager, Not, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { MSG } from '../common/helpers/validation-messages.helper';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
-import { paginate } from '../common/helpers/paginate.helper';
 import { UniversityService } from '../university/university.service';
+import { CommonService } from '../common/common.service';
+import { StudentFilterBuilder } from './filters/student-filter.builder';
+import { StudentFiltersDto } from './dto/student-filters.dto';
 
 @Injectable()
 export class StudentService {
@@ -17,7 +18,9 @@ export class StudentService {
   constructor(
     @InjectRepository(Student)
     private readonly studentRepository: Repository<Student>,
-    private readonly universityService: UniversityService
+    private readonly universityService: UniversityService,
+    private readonly commonService: CommonService,
+    private readonly filterBuilder: StudentFilterBuilder,
   ) {}
 
   /**
@@ -55,16 +58,16 @@ export class StudentService {
 
   /**
    * Obtiene estudiantes paginados.
-   * @param pagination - Parámetros de paginación.
+   * @param filters - Filtros.
    * @returns Respuesta paginada con entidades `Student`.
    */
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponse<Student>> {
-    const result = await paginate(this.studentRepository, pagination, {});
+  async findAll(filters: StudentFiltersDto): Promise<PaginatedResponse<Student>|Student[]> {
+    
+    let queryBuilder = this.studentRepository.createQueryBuilder('student');
 
-    return {
-      ...result,
-      data: result.data,
-    };
+    queryBuilder = this.filterBuilder.apply(queryBuilder, filters);
+
+    return this.commonService.paginate(queryBuilder, filters)
   }
 
   /**

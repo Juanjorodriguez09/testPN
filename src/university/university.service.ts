@@ -4,18 +4,21 @@ import { UpdateUniversityDto } from './dto/update-university.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { University } from './entities/university.entity';
 import { EntityManager, Not, Repository } from 'typeorm';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { paginate } from '../common/helpers/paginate.helper';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { User } from '../user/entities/user.entity';
+import { UniversityFiltersDto } from './dto/university-filters.dto';
+import { CommonService } from '../common/common.service';
+import { UniversityFilterBuilder } from './filters/university-filter.builder';
 
 @Injectable()
 export class UniversityService {
 
   constructor(
     @InjectRepository(University)
-    private readonly universityRepository: Repository<University>
+    private readonly universityRepository: Repository<University>,
+    private readonly commonService: CommonService,
+    private readonly filterBuilder: UniversityFilterBuilder,
   ) {}
 
   /**
@@ -50,16 +53,17 @@ export class UniversityService {
 
   /**
    * Obtiene universidades paginadas.
-   * @param pagination - Parámetros de paginación.
+   * @param filters - Filtros.
    * @returns Respuesta paginada con entidades `University`.
    */
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponse<University>> {
-    const result = await paginate(this.universityRepository, pagination, {});
+  async findAll(filters: UniversityFiltersDto): Promise<PaginatedResponse<University>|University[]> {
+    
+    let queryBuilder = this.universityRepository.createQueryBuilder('university');
 
-    return {
-      ...result,
-      data: result.data,
-    };
+    queryBuilder = this.filterBuilder.apply(queryBuilder, filters);
+
+    return this.commonService.paginate(queryBuilder, filters);
+
   }
 
   /**

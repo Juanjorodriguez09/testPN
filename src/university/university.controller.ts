@@ -4,6 +4,7 @@ import { UpdateUniversityDto } from './dto/update-university.dto';
 import { Public, Roles } from '../common/decorators';
 import { Role } from '../common/enums/role.enum';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { UniversityFiltersDto } from './dto/university-filters.dto';
 
 @Controller('university')
 export class UniversityController {
@@ -14,8 +15,8 @@ export class UniversityController {
 
   @Get()
   @Public()
-  findAll( @Query() pagination: PaginationDto ) {
-    return this.universityService.findAll(pagination);
+  findAll( @Query() filters: UniversityFiltersDto ) {
+    return this.universityService.findAll(filters);
   }
 
   @Get(':id')

@@ -40,10 +40,4 @@ export class UpdateStudentDto {
     @IsNumber({}, { message: MSG.isNumber('El semestre') })
     semester?: number;
 
-    @ApiProperty({ example: 1 })
-    @IsPositive({ message: MSG.isPositive('La universidad') })
-    @IsOptional()
-    @IsNumber({}, { message: MSG.isNumber('La universidad') })
-    universityId?: number;
-
 }

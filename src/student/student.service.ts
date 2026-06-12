@@ -97,10 +97,6 @@ export class StudentService {
   async update(id: number, updateStudentDto: UpdateStudentDto) {
 
     const { password, ...updateStudentData } = updateStudentDto;
-
-    if (updateStudentDto.universityId) {
-      await this.universityService.findOne(updateStudentDto.universityId);
-    }
     
     return this.withTransaction(async (manager) => {
 

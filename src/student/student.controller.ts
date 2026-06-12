@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { StudentService } from './student.service';
-import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentFiltersDto } from './dto/student-filters.dto';
+import { Roles } from '../common/decorators';
+import { Role } from '../common/enums/role.enum';
 
 @Controller('student')
 export class StudentController {
@@ -21,11 +22,11 @@ export class StudentController {
     return this.studentService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // @Roles(Role.SUPER_ADMIN)
-  // update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-  //   return this.studentService.update(+id, updateStudentDto);
-  // }
+  @Patch(':id')
+  @Roles(Role.SUPER_ADMIN, Role.STUDENT)
+  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
+    return this.studentService.update(+id, updateStudentDto);
+  }
 
   // @Delete(':id')
   // @Roles(Role.SUPER_ADMIN)

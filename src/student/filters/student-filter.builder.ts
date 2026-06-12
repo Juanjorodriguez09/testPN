@@ -10,6 +10,11 @@ export class StudentFilterBuilder implements FilterBuilder<Student, StudentFilte
   apply( queryBuilder: SelectQueryBuilder<Student>, filters: StudentFiltersDto ): SelectQueryBuilder<Student> {
 
     queryBuilder.leftJoinAndSelect(
+        'student.user',
+        'user',
+    );
+
+    queryBuilder.leftJoinAndSelect(
         'student.university',
         'university',
     );

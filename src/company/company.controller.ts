@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CompanyService } from './company.service';
-import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { Role } from '../common/enums/role.enum';
+import { Roles } from '../common/decorators';
 
 @Controller('company')
 export class CompanyController {
@@ -18,11 +19,11 @@ export class CompanyController {
     return this.companyService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // @Roles(Role.SUPER_ADMIN)
-  // update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-  //   return this.companyService.update(+id, updateCompanyDto);
-  // }
+  @Patch(':id')
+  @Roles(Role.SUPER_ADMIN, Role.COMPANY)
+  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
+    return this.companyService.update(+id, updateCompanyDto);
+  }
 
   // @Delete(':id')
   // @Roles(Role.SUPER_ADMIN)

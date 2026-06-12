@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { University } from './entities/university.entity';
 import { CommonModule } from '../common/common.module';
 import { UniversityFilterBuilder } from './filters/university-filter.builder';
+import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { UniversityFilterBuilder } from './filters/university-filter.builder';
     TypeOrmModule
   ],
   controllers: [UniversityController],
-  providers: [UniversityService, UniversityFilterBuilder],
+  providers: [UniversityService, UniversityFilterBuilder, BcryptAdapter],
 })
 export class UniversityModule {}

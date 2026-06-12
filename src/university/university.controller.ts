@@ -3,7 +3,6 @@ import { UniversityService } from './university.service';
 import { UpdateUniversityDto } from './dto/update-university.dto';
 import { Public, Roles } from '../common/decorators';
 import { Role } from '../common/enums/role.enum';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { UniversityFiltersDto } from './dto/university-filters.dto';
 
 @Controller('university')
@@ -24,11 +23,11 @@ export class UniversityController {
     return this.universityService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // @Roles(Role.SUPER_ADMIN)
-  // update(@Param('id') id: string, @Body() updateUniversityDto: UpdateUniversityDto) {
-  //   return this.universityService.update(+id, updateUniversityDto);
-  // }
+  @Patch(':id')
+  @Roles(Role.SUPER_ADMIN, Role.UNIVERSITY)
+  update(@Param('id') id: string, @Body() updateUniversityDto: UpdateUniversityDto) {
+    return this.universityService.update(+id, updateUniversityDto);
+  }
 
   // @Delete(':id')
   // @Roles(Role.SUPER_ADMIN)

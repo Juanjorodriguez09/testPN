@@ -3,13 +3,14 @@ import { CreateUniversityDto } from './dto/create-university.dto';
 import { UpdateUniversityDto } from './dto/update-university.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { University } from './entities/university.entity';
-import { EntityManager, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { User } from '../user/entities/user.entity';
 import { UniversityFiltersDto } from './dto/university-filters.dto';
 import { CommonService } from '../common/common.service';
 import { UniversityFilterBuilder } from './filters/university-filter.builder';
+import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 
 @Injectable()
 export class UniversityService {
@@ -19,6 +20,8 @@ export class UniversityService {
     private readonly universityRepository: Repository<University>,
     private readonly commonService: CommonService,
     private readonly filterBuilder: UniversityFilterBuilder,
+    private readonly dataSource: DataSource,
+    private readonly hasher: BcryptAdapter,
   ) {}
 
   /**
@@ -88,27 +91,63 @@ export class UniversityService {
    * @throws NotFoundException si no existe.
    */
   async update(id: number, updateUniversityDto: UpdateUniversityDto) {
-    // Preload y verificación de existencia
-    const university = await this.universityRepository.preload({id, ...updateUniversityDto});
-    if (!university) 
-      throw new NotFoundException(MSG.notFoundById('universidad'));
 
-    // Validar unicidad del nit ignorando el registro actual
-    if (updateUniversityDto.nit) {
-      const nitTaken = await this.universityRepository.existsBy({
-        nit : updateUniversityDto.nit,
-        id  : Not(id),
-      });
+    const { password, ...updateUniversityData } = updateUniversityDto;
 
-      if (nitTaken) throw new ConflictException(MSG.unique('NIT'));
-    }
+    return this.withTransaction(async (manager) => {
 
-    return this.universityRepository.save(university);
+      // Preload y verificación de existencia
+      const university = await manager.preload(University, {id, ...updateUniversityData});
+      if (!university) 
+        throw new NotFoundException(MSG.notFoundById('universidad'));
 
+      if (password) {
+        const hashedPassword = await this.hasher.hash(password);
+        const user = await manager.preload(User, { id: university.userId, password: hashedPassword });
+        if (!user) throw new NotFoundException(MSG.notFoundById('usuario'));
+        manager.save(user);
+      }
+
+      return manager.save(university);
+    });
   }
 
+  /**
+   * Elimina (soft remove) una universidad por id.
+   * @param id - Identificador de la universidad.
+   */
   async remove(id: number) {
     const university = await this.findOne(id);
     await this.universityRepository.softRemove(university);
+  }
+
+  /**
+   * Ejecuta una operación dentro de una transacción de TypeORM.
+   * @param operation - Función que recibe un `EntityManager` y realiza operaciones sobre la BD.
+   * @returns El resultado de la operación ejecutada dentro de la transacción.
+   * @throws Re-lanza cualquier error ocurrido durante la operación tras hacer rollback.
+   */
+  private async withTransaction<T>(operation: (manager: EntityManager) => Promise<T>): Promise<T> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+
+      // Ejecutar la operación pasando el EntityManager de la transacción
+      const result = await operation(queryRunner.manager);
+      // Confirmar la transacción si todo salió bien
+      await queryRunner.commitTransaction();
+      return result;
+
+    } catch (error) {
+
+      // Revertir cambios en caso de error
+      await queryRunner.rollbackTransaction();
+      throw error;
+
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

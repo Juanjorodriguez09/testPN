@@ -3,7 +3,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './entities/student.entity';
-import { EntityManager, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
@@ -11,6 +11,7 @@ import { UniversityService } from '../university/university.service';
 import { CommonService } from '../common/common.service';
 import { StudentFilterBuilder } from './filters/student-filter.builder';
 import { StudentFiltersDto } from './dto/student-filters.dto';
+import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 
 @Injectable()
 export class StudentService {
@@ -21,6 +22,8 @@ export class StudentService {
     private readonly universityService: UniversityService,
     private readonly commonService: CommonService,
     private readonly filterBuilder: StudentFilterBuilder,
+    private readonly dataSource: DataSource,
+    private readonly hasher: BcryptAdapter,
   ) {}
 
   /**
@@ -92,28 +95,63 @@ export class StudentService {
    * @throws NotFoundException si no existe.
    */
   async update(id: number, updateStudentDto: UpdateStudentDto) {
-    // Cargar la entidad y aplicar cambios; si no existe, lanzar error
-    const student = await this.studentRepository.preload({id, ...updateStudentDto});
-    if (!student) 
-      throw new NotFoundException(MSG.notFoundById('estudiante'));
 
-    // Validar unicidad del documento de identidad ignorando el registro actual
-    if (updateStudentDto.documentNumber) {
-      const idNumberTaken = await this.studentRepository.existsBy({
-        documentNumber : updateStudentDto.documentNumber,
-        id             : Not(id),
-      });
+    const { password, ...updateStudentData } = updateStudentDto;
+    
+    return this.withTransaction(async (manager) => {
 
-      if (idNumberTaken) throw new ConflictException(MSG.unique('número de documento'));
-    }
+      // Preload y verificación de existencia
+      const student = await manager.preload(Student, {id, ...updateStudentData});
+      if (!student) 
+        throw new NotFoundException(MSG.notFoundById('estudiante'));
 
-    // Guardar y retornar
-    return this.studentRepository.save(student);
+      if (password) {
+        const hashedPassword = await this.hasher.hash(password);
+        const user = await manager.preload(User, { id: student.userId, password: hashedPassword });
+        if (!user) throw new NotFoundException(MSG.notFoundById('usuario'));
+        manager.save(user);
+      }
 
+      return manager.save(student);
+    });
   }
 
+  /**
+   * Elimina (soft remove) un estudiante por id.
+   * @param id - Identificador del estudiante.
+   */
   async remove(id: number) {
     const student = await this.findOne(id);
     await this.studentRepository.softRemove(student);
+  }
+
+  /**
+   * Ejecuta una operación dentro de una transacción de TypeORM.
+   * @param operation - Función que recibe un `EntityManager` y realiza operaciones sobre la BD.
+   * @returns El resultado de la operación ejecutada dentro de la transacción.
+   * @throws Re-lanza cualquier error ocurrido durante la operación tras hacer rollback.
+   */
+  private async withTransaction<T>(operation: (manager: EntityManager) => Promise<T>): Promise<T> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+
+      // Ejecutar la operación pasando el EntityManager de la transacción
+      const result = await operation(queryRunner.manager);
+      // Confirmar la transacción si todo salió bien
+      await queryRunner.commitTransaction();
+      return result;
+
+    } catch (error) {
+
+      // Revertir cambios en caso de error
+      await queryRunner.rollbackTransaction();
+      throw error;
+
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

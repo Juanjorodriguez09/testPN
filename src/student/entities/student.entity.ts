@@ -33,6 +33,12 @@ export class Student {
     @Column({ type: 'int' })
     semester!: number;
 
+    @Column()
+    userId!: string;
+
+    @Column()
+    universityId!: number;
+
     @OneToOne(
         () => User, 
         (user) => user.company, 

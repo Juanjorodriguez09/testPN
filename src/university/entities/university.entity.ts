@@ -25,6 +25,9 @@ export class University {
     @Column({type: 'varchar', length: 15})
     phone!: string;
 
+    @Column()
+    userId!: string;
+
     @OneToOne(
         () => User, 
         (user) => user.university, 

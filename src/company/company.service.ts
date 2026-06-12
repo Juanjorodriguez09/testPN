@@ -2,20 +2,23 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
 import { User } from '../user/entities/user.entity';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { paginate } from '../common/helpers/paginate.helper';
+import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 
 @Injectable()
 export class CompanyService {
 
   constructor(
     @InjectRepository(Company)
-    private readonly companyRepository: Repository<Company>
+    private readonly companyRepository: Repository<Company>,
+    private readonly dataSource: DataSource,
+    private readonly hasher: BcryptAdapter,
   ) {}
 
   /**
@@ -85,23 +88,25 @@ export class CompanyService {
    * @throws NotFoundException si no existe la compañía.
    */
   async update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    // Preload permite aplicar cambios solo si el registro existe
-    const company = await this.companyRepository.preload({id, ...updateCompanyDto});
-    if (!company) 
-      throw new NotFoundException(MSG.notFoundById('empresa'));
+    
+    const { password, ...updateCompanyData } = updateCompanyDto;
+    
+    return this.withTransaction(async (manager) => {
 
-    // Validar unicidad del nit ignorando el registro actual
-    if (updateCompanyDto.nit) {
-      const nitTaken = await this.companyRepository.existsBy({
-        nit : updateCompanyDto.nit,
-        id  : Not(id),
-      });
+      // Preload y verificación de existencia
+      const company = await manager.preload(Company, {id, ...updateCompanyData});
+      if (!company) 
+        throw new NotFoundException(MSG.notFoundById('empresa'));
 
-      if (nitTaken) throw new ConflictException(MSG.unique('NIT'));
-    }
+      if (password) {
+        const hashedPassword = await this.hasher.hash(password);
+        const user = await manager.preload(User, { id: company.userId, password: hashedPassword });
+        if (!user) throw new NotFoundException(MSG.notFoundById('usuario'));
+        manager.save(user);
+      }
 
-    // Guardar y retornar la entidad actualizada
-    return this.companyRepository.save(company);
+      return manager.save(company);
+    });
 
   }
 
@@ -113,6 +118,36 @@ export class CompanyService {
   async remove(id: number) {
     const company = await this.findOne(id);
     await this.companyRepository.softRemove(company);
+  }
+
+  /**
+   * Ejecuta una operación dentro de una transacción de TypeORM.
+   * @param operation - Función que recibe un `EntityManager` y realiza operaciones sobre la BD.
+   * @returns El resultado de la operación ejecutada dentro de la transacción.
+   * @throws Re-lanza cualquier error ocurrido durante la operación tras hacer rollback.
+   */
+  private async withTransaction<T>(operation: (manager: EntityManager) => Promise<T>): Promise<T> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+
+      // Ejecutar la operación pasando el EntityManager de la transacción
+      const result = await operation(queryRunner.manager);
+      // Confirmar la transacción si todo salió bien
+      await queryRunner.commitTransaction();
+      return result;
+
+    } catch (error) {
+
+      // Revertir cambios en caso de error
+      await queryRunner.rollbackTransaction();
+      throw error;
+
+    } finally {
+      await queryRunner.release();
+    }
   }
 
 }

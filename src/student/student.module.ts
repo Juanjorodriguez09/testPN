@@ -6,6 +6,7 @@ import { Student } from './entities/student.entity';
 import { UniversityModule } from '../university/university.module';
 import { CommonModule } from '../common/common.module';
 import { StudentFilterBuilder } from './filters/student-filter.builder';
+import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { StudentFilterBuilder } from './filters/student-filter.builder';
     TypeOrmModule
   ],
   controllers: [StudentController],
-  providers: [StudentService, StudentFilterBuilder],
+  providers: [StudentService, StudentFilterBuilder, BcryptAdapter],
 })
 export class StudentModule {}

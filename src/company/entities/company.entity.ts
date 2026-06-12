@@ -35,6 +35,9 @@ export class Company {
     @Column({type: 'varchar', length: 15})
     phone!: string;
 
+    @Column()
+    userId!: string;
+
     @OneToOne(
         () => User, 
         (user) => user.company, 

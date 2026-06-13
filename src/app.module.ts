@@ -13,6 +13,8 @@ import { StudentModule } from './student/student.module';
 import { VacancieModule } from './vacancie/vacancie.module';
 import { ApplicationModule } from './application/application.module';
 import { PartnershipModule } from './partnership/partnership.module';
+import { StorageModule } from './storage/storage.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -54,6 +56,10 @@ import { PartnershipModule } from './partnership/partnership.module';
     ApplicationModule,
 
     PartnershipModule,
+
+    StorageModule,
+
+    FilesModule
 
   ],
   controllers: [],

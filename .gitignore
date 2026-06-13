@@ -15,6 +15,7 @@ lerna-debug.log*
 # OS
 .DS_Store
 /postgres_data
+/uploads
 
 # Tests
 /coverage

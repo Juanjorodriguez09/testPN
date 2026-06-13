@@ -19,7 +19,7 @@ export class UpdateCompanyDto {
     @IsString({ message: MSG.string('La descripción') })
     @MaxLength(400, { message: MSG.maxLength('La descripción', 400) })
     @IsOptional()
-    @IsNotEmpty({ message: MSG.required('La descripción') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('La descripción') })
     description?: string;
 
     @ApiProperty({ example: 'Servicios y Consultoría TI' })
@@ -35,13 +35,13 @@ export class UpdateCompanyDto {
     @ApiProperty({ example: '3176356499' })
     @IsString({ message: MSG.string('El teléfono') })
     @MaxLength(15, { message: MSG.maxLength('El teléfono', 15) })
-    @IsNotEmpty({ message: MSG.required('El teléfono') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El teléfono') })
     @IsOptional()
     phone?: string;
 
     @ApiPropertyOptional({ example: '8t3hg43283948324ufh2332.jpg' })
     @IsString({ message: MSG.string('El logo de la empresa') })
-    @IsNotEmpty({ message: MSG.required('El logo de la empresa') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El logo de la empresa') })
     @IsOptional()
     profilePhoto?: string;
 

@@ -9,12 +9,12 @@ export class CreateVacancieDto {
 
     @ApiProperty({ example: 'Ingeniero DevOps' })
     @IsString({ message: MSG.string('El título') })
-    @IsNotEmpty({ message: MSG.required('El título') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El título') })
     title!: string;
     
     @ApiProperty({ example: 'Participar de la producción de software en un entorno DevOps asegurando buenas prácticas CI/CD' })
     @IsString({ message: MSG.string('La descripción') })
-    @IsNotEmpty({ message: MSG.required('La descripción') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('La descripción') })
     description!: string;
     
     @ApiProperty({ example: 'Experiencia en Linux, CI/CD, Docker, Kubernetes, nube (AWS/Azure/GCP), IaC (Terraform), Git, scripting, monitoreo, seguridad, redes, automatización y trabajo ágil.' })
@@ -29,7 +29,7 @@ export class CreateVacancieDto {
     
     @ApiProperty({ example: 'Colombia' })
     @IsString({ message: MSG.string('La ubicación') })
-    @IsNotEmpty({ message: MSG.required('La ubicación') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('La ubicación') })
     location!: string;
 
     @ApiProperty({ example: 'Remoto' })

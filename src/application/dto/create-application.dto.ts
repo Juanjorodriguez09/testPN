@@ -12,7 +12,7 @@ export class CreateApplicationDto {
 
     @ApiProperty({ example: 'Pronto estaremos en contacto contigo para avanzar con el proceso de selección' })
     @IsString({ message: MSG.string('Los comentarios') })
-    @IsNotEmpty({ message: MSG.required('Los comentarios') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('Los comentarios') })
     @IsOptional()
     companyComments?: string;
 

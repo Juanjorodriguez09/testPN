@@ -6,6 +6,7 @@ export const MSG = {
   email         : () => 'El correo electrónico no tiene un formato válido',
   minLength     : (field: string, min: number) => `${field} debe tener al menos ${min} caracteres`,
   maxLength     : (field: string, max: number) => `${field} no puede tener más de ${max} caracteres`,
+  isNotEmpty    : (field: string) => `${field} no puede estar vacío`,
   isNumber      : (field: string) => `${field} debe ser un número`,
   isInt         : (field: string) => `${field} debe ser un número entero`,
   isPositive    : (field: string) => `${field} debe ser un número positivo`,

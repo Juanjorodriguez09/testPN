@@ -20,18 +20,18 @@ export class RegisterCompanyDto {
 
     @ApiProperty({ example: 'IBM' })
     @IsString({ message: MSG.string('El nombre') })
-    @IsNotEmpty({ message: MSG.required('El nombre') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El nombre') })
     name!: string;
 
     @ApiProperty({ example: 'Te acompañamos y ponemos a disposición el talento, habilidades, experiencia e ingeniería para alcanzar tus estrategias de transformación digital, nuevos productos o emprendimientos.' })
     @IsString({ message: MSG.string('La descripción') })
     @MaxLength(400, { message: MSG.maxLength('La descripción', 400) })
-    @IsNotEmpty({ message: MSG.required('La descripción') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('La descripción') })
     description!: string;
 
     @ApiProperty({ example: '324.43634.23' })
     @IsString({ message: MSG.string('El NIT') })
-    @IsNotEmpty({ message: MSG.required('El NIT') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El NIT') })
     nit!: string;
 
     @ApiProperty({ example: 'Servicios y Consultoría TI' })
@@ -46,7 +46,7 @@ export class RegisterCompanyDto {
     @ApiProperty({ example: '3176356499' })
     @IsString({ message: MSG.string('El teléfono') })
     @MaxLength(15, { message: MSG.maxLength('El teléfono', 15) })
-    @IsNotEmpty({ message: MSG.required('El teléfono') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El teléfono') })
     phone!: string;
 
 }

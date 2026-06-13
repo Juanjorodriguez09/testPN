@@ -10,6 +10,6 @@ export class LoginDto {
 
   @ApiProperty({ example: 'Juliana939' })
   @IsString({ message: MSG.string('La contraseña') })
-  @IsNotEmpty({ message: MSG.required('La contraseña') })
+  @IsNotEmpty({ message: MSG.isNotEmpty('La contraseña') })
   password!: string;
 }

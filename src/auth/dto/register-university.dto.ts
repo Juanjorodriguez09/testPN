@@ -19,12 +19,12 @@ export class RegisterUniversityDto {
 
     @ApiProperty({ example: 'Harvard' })
     @IsString({ message: MSG.string('El nombre') })
-    @IsNotEmpty({ message: MSG.required('El nombre') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El nombre') })
     name!: string;
 
     @ApiProperty({ example: '324.25545.23' })
     @IsString({ message: MSG.string('El NIT') })
-    @IsNotEmpty({ message: MSG.required('El NIT') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El NIT') })
     nit!: string;
 
     @ApiPropertyOptional({ example: 'Calle 101 # 14-23 - Boston Massachusetts' })
@@ -35,7 +35,7 @@ export class RegisterUniversityDto {
     @ApiProperty({ example: '314543234' })
     @IsString({ message: MSG.string('El teléfono') })
     @MaxLength(15, { message: MSG.maxLength('El teléfono', 15) })
-    @IsNotEmpty({ message: MSG.required('El teléfono') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El teléfono') })
     phone!: string;
 
 }

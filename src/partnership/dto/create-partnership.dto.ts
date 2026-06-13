@@ -8,7 +8,7 @@ export class CreatePartnershipDto {
 
     @ApiProperty({ example: 'Me interesa ofrecer vacantes en su universidad' })
     @IsString({ message: MSG.string('El comentario') })
-    @IsNotEmpty({ message: MSG.required('El comentario') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El comentario') })
     @IsOptional()
     comment!: string;
 

@@ -20,24 +20,24 @@ export class RegisterStudentDto {
 
     @ApiProperty({ example: 'Felipe Rojas García' })
     @IsString({ message: MSG.string('El nombre completo') })
-    @IsNotEmpty({ message: MSG.required('El nombre completo') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El nombre completo') })
     fullName!: string;
 
     @ApiProperty({ example: 'Soy un estudiante apasionado por el desarrollo de aplicaciones web' })
     @IsString({ message: MSG.string('Sobre mí') })
     @MaxLength(400, { message: MSG.maxLength('Sobre mí', 400) })
-    @IsNotEmpty({ message: MSG.required('Sobre mí') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('Sobre mí') })
     about!: string;
 
     @ApiProperty({ example: '324.43634.23' })
     @IsString({ message: MSG.string('El número de documento') })
-    @IsNotEmpty({ message: MSG.required('El número de documento') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El número de documento') })
     documentNumber!: string;
 
     @ApiProperty({ example: '3176356499' })
     @IsString({ message: MSG.string('El teléfono') })
     @MaxLength(15, { message: MSG.maxLength('El teléfono', 15) })
-    @IsNotEmpty({ message: MSG.required('El teléfono') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El teléfono') })
     phone!: string;
 
     @ApiProperty({ example: Career.SoftwareEngineering })

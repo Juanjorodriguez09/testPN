@@ -19,14 +19,14 @@ export class UpdateStudentDto {
     @IsString({ message: MSG.string('Sobre mí') })
     @MaxLength(400, { message: MSG.maxLength('Sobre mí', 400) })
     @IsOptional()
-    @IsNotEmpty({ message: MSG.required('Sobre mí') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('Sobre mí') })
     about?: string;
 
     @ApiProperty({ example: '3176356499' })
     @IsString({ message: MSG.string('El teléfono') })
     @MaxLength(15, { message: MSG.maxLength('El teléfono', 15) })
     @IsOptional()
-    @IsNotEmpty({ message: MSG.required('El teléfono') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('El teléfono') })
     phone?: string;
 
     @ApiProperty({ example: Career.SoftwareEngineering })
@@ -42,13 +42,13 @@ export class UpdateStudentDto {
 
     @ApiPropertyOptional({ example: '8t3hg43283948324ufh2332.jpg' })
     @IsString({ message: MSG.string('La foto de perfil') })
-    @IsNotEmpty({ message: MSG.required('La foto de perfil') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('La foto de perfil') })
     @IsOptional()
     profilePhoto?: string;
 
     @ApiPropertyOptional({ example: '8t3hg43283948324ufh2332.jpg' })
     @IsString({ message: MSG.string('La hoja de vida') })
-    @IsNotEmpty({ message: MSG.required('La hoja de vida') })
+    @IsNotEmpty({ message: MSG.isNotEmpty('La hoja de vida') })
     @IsOptional()
     resume?: string;
 

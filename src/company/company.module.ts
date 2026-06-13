@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Company } from './entities/company.entity';
 import { CommonModule } from '../common/common.module';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
+import { CompanyFilterBuilder } from './filters/company-filter.builder';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
     TypeOrmModule
   ],
   controllers: [CompanyController],
-  providers: [CompanyService, BcryptAdapter],
+  providers: [CompanyService, BcryptAdapter, CompanyFilterBuilder],
 })
 export class CompanyModule {}

@@ -6,10 +6,11 @@ import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
 import { User } from '../user/entities/user.entity';
 import { MSG } from '../common/helpers/validation-messages.helper';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
-import { paginate } from '../common/helpers/paginate.helper';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
+import { CommonService } from '../common/common.service';
+import { CompanyFilterBuilder } from './filters/company-filter.builder';
+import { CompanyFiltersDto } from './dto/company-filters.dto';
 
 @Injectable()
 export class CompanyService {
@@ -19,6 +20,8 @@ export class CompanyService {
     private readonly companyRepository: Repository<Company>,
     private readonly dataSource: DataSource,
     private readonly hasher: BcryptAdapter,
+    private readonly commonService: CommonService,
+    private readonly filterBuilder: CompanyFilterBuilder,
   ) {}
 
   /**
@@ -54,16 +57,16 @@ export class CompanyService {
 
   /**
    * Obtiene una lista paginada de compañías.
-   * @param pagination - Parámetros de paginación (página, limit, etc.).
+   * @param filters - Filtros.
    * @returns Respuesta paginada con entidades `Company`.
    */
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponse<Company>> {
-    const result = await paginate(this.companyRepository, pagination, {});
+  async findAll(filters: CompanyFiltersDto): Promise<PaginatedResponse<Company>|Company[]> {
 
-    return {
-      ...result,
-      data: result.data,
-    };
+    let queryBuilder = this.companyRepository.createQueryBuilder('company');
+
+    queryBuilder = this.filterBuilder.apply(queryBuilder, filters);
+
+    return this.commonService.paginate(queryBuilder, filters);
   }
 
   /**

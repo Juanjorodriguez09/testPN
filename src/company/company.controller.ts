@@ -1,17 +1,17 @@
 import { Controller, Get, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { PaginationDto } from '../common/dto/pagination.dto';
 import { Role } from '../common/enums/role.enum';
 import { Roles } from '../common/decorators';
+import { CompanyFiltersDto } from './dto/company-filters.dto';
 
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Get()
-  findAll( @Query() pagination: PaginationDto ) {
-    return this.companyService.findAll(pagination);
+  findAll( @Query() filters: CompanyFiltersDto ) {
+    return this.companyService.findAll(filters);
   }
 
   @Get(':id')

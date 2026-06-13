@@ -9,7 +9,10 @@ export class UniversityFilterBuilder implements FilterBuilder<University, Univer
 
   apply( queryBuilder: SelectQueryBuilder<University>, filters: UniversityFiltersDto ): SelectQueryBuilder<University> {
 
-    
+    queryBuilder.leftJoinAndSelect(
+      'university.user',
+      'user',
+    );
 
     return queryBuilder;
 

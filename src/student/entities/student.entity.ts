@@ -3,6 +3,7 @@ import { User } from "../../user/entities/user.entity";
 import { Career } from "../enum/career.enum";
 import { University } from "../../university/entities/university.entity";
 import { Application } from "../../application/entities/application.entity";
+import { Expose } from "class-transformer";
 
 
 @Entity('students')
@@ -38,6 +39,24 @@ export class Student {
 
     @Column()
     universityId!: number;
+
+    @Column('text', { nullable: true })
+    profilePhoto?: string;
+
+    @Expose()
+    get profilePhotoUrl() {
+        if (this.profilePhoto)
+            return `${process.env.HOST_URL ?? 'http://localhost:3000/api'}/files/${ this.profilePhoto }`;
+    }
+
+    @Column('text', { nullable: true })
+    resume?: string;
+
+    @Expose()
+    get resumeUrl() {
+        if (this.resume)
+            return `${process.env.HOST_URL ?? 'http://localhost:3000/api'}/files/${ this.resume }`;
+    }
 
     @OneToOne(
         () => User, 

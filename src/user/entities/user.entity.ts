@@ -13,6 +13,7 @@ import { Role } from '../../common/enums/role.enum';
 import { University } from '../../university/entities/university.entity';
 import { Company } from '../../company/entities/company.entity';
 import { Student } from '../../student/entities/student.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -24,6 +25,7 @@ export class User {
     email!: string;
 
     @Column('text', { select: false })
+    @Exclude()
     password!: string;
 
     @Column('bool', {

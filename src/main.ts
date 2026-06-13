@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 
@@ -21,10 +21,12 @@ async function bootstrap() {
 
   app.useGlobalFilters(new ValidationExceptionFilter());
 
-   app.enableCors({
+  app.enableCors({
     origin: process.env.FRONT_URL ?? 'http://localhost:4200',
     credentials: true,
   });
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const config = new DocumentBuilder()
     .setTitle('Konekt')

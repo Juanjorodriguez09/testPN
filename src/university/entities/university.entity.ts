@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMa
 import { User } from '../../user/entities/user.entity';
 import { Student } from '../../student/entities/student.entity';
 import { Partnership } from '../../partnership/entities/partnership.entity';
+import { Expose } from 'class-transformer';
 
 @Entity('universities')
 export class University {
@@ -27,6 +28,15 @@ export class University {
 
     @Column()
     userId!: string;
+
+    @Column('text', { nullable: true })
+    profilePhoto?: string;
+
+    @Expose()
+    get profilePhotoUrl() {
+        if (this.profilePhoto)
+            return `${process.env.HOST_URL ?? 'http://localhost:3000/api'}/files/${ this.profilePhoto }`;
+    }
 
     @OneToOne(
         () => User, 

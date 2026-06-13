@@ -3,6 +3,7 @@ import { User } from '../../user/entities/user.entity';
 import { IndustryType } from '../enum/industry-type.enum';
 import { Vacancie } from '../../vacancie/entities/vacancie.entity';
 import { Partnership } from '../../partnership/entities/partnership.entity';
+import { Expose } from 'class-transformer';
 
 @Entity('companies')
 export class Company {
@@ -37,6 +38,15 @@ export class Company {
 
     @Column()
     userId!: string;
+
+    @Column('text', { nullable: true })
+    profilePhoto?: string;
+
+    @Expose()
+    get profilePhotoUrl() {
+        if (this.profilePhoto)
+            return `${process.env.HOST_URL ?? 'http://localhost:3000/api'}/files/${ this.profilePhoto }`;
+    }
 
     @OneToOne(
         () => User, 

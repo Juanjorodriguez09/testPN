@@ -1,0 +1,2 @@
+
+export const STORAGE_STRATEGY = 'STORAGE_STRATEGY';

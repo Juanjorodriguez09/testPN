@@ -39,4 +39,10 @@ export class UpdateCompanyDto {
     @IsOptional()
     phone?: string;
 
+    @ApiPropertyOptional({ example: '8t3hg43283948324ufh2332.jpg' })
+    @IsString({ message: MSG.string('El logo de la empresa') })
+    @IsNotEmpty({ message: MSG.required('El logo de la empresa') })
+    @IsOptional()
+    profilePhoto?: string;
+
 }

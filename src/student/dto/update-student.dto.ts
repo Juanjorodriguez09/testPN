@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, MinLength, Matches, IsNotEmpty, MaxLength, IsEnum, IsPositive, IsNumber, IsOptional } from 'class-validator';
 import { MSG } from '../../common/helpers/validation-messages.helper';
 import { Career } from '../enum/career.enum';
@@ -39,5 +39,17 @@ export class UpdateStudentDto {
     @IsOptional()
     @IsNumber({}, { message: MSG.isNumber('El semestre') })
     semester?: number;
+
+    @ApiPropertyOptional({ example: '8t3hg43283948324ufh2332.jpg' })
+    @IsString({ message: MSG.string('La foto de perfil') })
+    @IsNotEmpty({ message: MSG.required('La foto de perfil') })
+    @IsOptional()
+    profilePhoto?: string;
+
+    @ApiPropertyOptional({ example: '8t3hg43283948324ufh2332.jpg' })
+    @IsString({ message: MSG.string('La hoja de vida') })
+    @IsNotEmpty({ message: MSG.required('La hoja de vida') })
+    @IsOptional()
+    resume?: string;
 
 }

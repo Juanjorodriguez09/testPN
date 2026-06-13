@@ -6,6 +6,7 @@ export class UpdateUniversityDto {
 
     @ApiPropertyOptional({ example: 'Calle 101 # 14-23 - Boston Massachusetts' })
     @IsString({ message: MSG.string('La dirección') })
+    @IsNotEmpty({ message: MSG.required('La dirección') })
     @IsOptional()
     address?: string;
 
@@ -25,4 +26,10 @@ export class UpdateUniversityDto {
         message: MSG.password()
     })
     password?: string;
+
+    @ApiPropertyOptional({ example: '8t3hg43283948324ufh2332.jpg' })
+    @IsString({ message: MSG.string('El logo de la universidad') })
+    @IsNotEmpty({ message: MSG.required('El logo de la universidad') })
+    @IsOptional()
+    profilePhoto?: string;
 }

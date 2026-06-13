@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ApplicationStatus } from "../enum/application-status.enum";
 import { Student } from "../../student/entities/student.entity";
 import { Vacancie } from "../../vacancie/entities/vacancie.entity";
+import { Internship } from "../../internship/entities/internship.entity";
 
 @Entity('applications')
 export class Application {
@@ -32,6 +33,12 @@ export class Application {
     )
     @JoinColumn({ name: 'vacancieId' })
     vacancie!: Vacancie
+
+    @OneToOne(
+        () => Internship,
+        (internship) => internship.application
+    )
+    internship!: Internship;
 
     @CreateDateColumn()
     createdAt!: Date;

@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { StorageStrategy, FileUploadResult } from '../interfaces/storage-strategy.interface';
+import { UuidAdapter } from '../../common/adapters/uuid.adapter';
 
 @Injectable()
 export class LocalStorageStrategy implements StorageStrategy {
@@ -24,7 +24,7 @@ export class LocalStorageStrategy implements StorageStrategy {
 
   async upload(file: Express.Multer.File): Promise<FileUploadResult> {
     const ext = path.extname(file.originalname);
-    const filename = `${uuidv4()}${ext}`;
+    const filename = `${UuidAdapter.getUuid()}${ext}`;
     const filePath = path.join(this.uploadDir, filename);
 
     await fs.promises.writeFile(filePath, file.buffer);

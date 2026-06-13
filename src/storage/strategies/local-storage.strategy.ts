@@ -24,13 +24,11 @@ export class LocalStorageStrategy implements StorageStrategy {
 
   async upload(file: Express.Multer.File): Promise<FileUploadResult> {
     const ext = path.extname(file.originalname);
-    let filename = `${uuidv4()}${ext}`;
+    const filename = `${uuidv4()}${ext}`;
     const filePath = path.join(this.uploadDir, filename);
 
     await fs.promises.writeFile(filePath, file.buffer);
     this.logger.log(`Archivo guardado: ${filePath}`);
-
-    filename = `${ this.configService.get<string>('HOST_API') }/files/${filename}`;
 
     return { filename, path: filePath, size: file.size, mimetype: file.mimetype };
   }

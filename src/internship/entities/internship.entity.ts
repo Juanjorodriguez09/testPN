@@ -1,7 +1,7 @@
-import { AfterLoad, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { AfterLoad, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { InternshipStatus } from "../enum/internship-status.enum";
 import { Application } from "../../application/entities/application.entity";
-import { formatDate } from "../../common/helpers/format-date.helper";
+import { InternshipUpdate } from "../../internship-update/entities/internship-update.entity";
 
 
 @Entity('internships')
@@ -29,6 +29,12 @@ export class Internship {
     )
     @JoinColumn({name: 'applicationId'})
     application!: Application;
+
+    @OneToMany(
+        () => InternshipUpdate,
+        (internshipUpdate) => internshipUpdate.internship
+    )
+    internshipUpdates?: InternshipUpdate[]
 
     @CreateDateColumn()
     createdAt!: Date;

@@ -16,6 +16,7 @@ import { PartnershipModule } from './partnership/partnership.module';
 import { StorageModule } from './storage/storage.module';
 import { FilesModule } from './files/files.module';
 import { InternshipModule } from './internship/internship.module';
+import { InternshipUpdateModule } from './internship-update/internship-update.module';
 
 @Module({
   imports: [
@@ -62,7 +63,9 @@ import { InternshipModule } from './internship/internship.module';
 
     FilesModule,
 
-    InternshipModule
+    InternshipModule,
+
+    InternshipUpdateModule
 
   ],
   controllers: [],

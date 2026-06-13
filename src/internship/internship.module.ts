@@ -16,7 +16,8 @@ import { InternshipFilterBuilder } from './filters/internship-filter.builder';
   controllers: [InternshipController],
   providers: [InternshipService, InternshipFilterBuilder],
   exports: [
-    TypeOrmModule
+    TypeOrmModule,
+    InternshipService
   ]
 })
 export class InternshipModule {}

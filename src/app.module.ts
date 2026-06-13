@@ -15,6 +15,7 @@ import { ApplicationModule } from './application/application.module';
 import { PartnershipModule } from './partnership/partnership.module';
 import { StorageModule } from './storage/storage.module';
 import { FilesModule } from './files/files.module';
+import { InternshipModule } from './internship/internship.module';
 
 @Module({
   imports: [
@@ -59,7 +60,9 @@ import { FilesModule } from './files/files.module';
 
     StorageModule,
 
-    FilesModule
+    FilesModule,
+
+    InternshipModule
 
   ],
   controllers: [],

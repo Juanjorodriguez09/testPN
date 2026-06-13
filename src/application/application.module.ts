@@ -18,7 +18,8 @@ import { ApplicationFilterBuilder } from './filters/application-filter.builder';
   controllers: [ApplicationController],
   providers: [ApplicationService, ApplicationFilterBuilder],
   exports: [
-    TypeOrmModule
+    TypeOrmModule,
+    ApplicationService
   ]
 })
 export class ApplicationModule {}

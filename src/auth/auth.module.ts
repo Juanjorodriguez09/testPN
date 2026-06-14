@@ -10,6 +10,9 @@ import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 import { UniversityModule } from '../university/university.module';
 import { CompanyModule } from '../company/company.module';
 import { StudentModule } from '../student/student.module';
+import { MailModule } from '../mail/mail.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
 
 @Module({
   imports: [
@@ -18,6 +21,9 @@ import { StudentModule } from '../student/student.module';
     UniversityModule,
     CompanyModule,
     StudentModule,
+    MailModule,
+
+    TypeOrmModule.forFeature([ PasswordResetToken ]),
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
 

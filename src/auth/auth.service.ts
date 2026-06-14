@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,12 +11,21 @@ import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { RegisterUniversityDto } from './dto/register-university.dto';
 import { UniversityService } from '../university/university.service';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { Role } from '../common/enums/role.enum';
 import { RegisterCompanyDto } from './dto/register-company.dto';
 import { CompanyService } from '../company/company.service';
 import { RegisterStudentDto } from './dto';
 import { StudentService } from '../student/student.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
+import { MailService } from '../mail/mail.service';
+import * as crypto from 'crypto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { User } from '../user/entities/user.entity';
+
+const RESET_TOKEN_EXPIRATION_MINUTES = 30;
 
 @Injectable()
 export class AuthService {
@@ -29,6 +39,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly dataSource: DataSource,
+    @InjectRepository(PasswordResetToken)
+    private readonly resetTokenRepository: Repository<PasswordResetToken>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly mailService: MailService,
   ) {}
 
   /**
@@ -140,6 +155,74 @@ export class AuthService {
       user: { ...rest, profile: profileMap[user.role] ?? null },
       token,
     };
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
+
+    // No revelamos si el correo existe o no
+    if (!user) {
+      return { message: MSG.genericForgotPasswordMessage() };
+    }
+
+    // Invalidar tokens previos no usados deL usuario
+    await this.resetTokenRepository.update(
+      { userId: user.id, used: false },
+      { used: true },
+    );
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto
+      .createHash('sha256')
+      .update(rawToken)
+      .digest('hex');
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(
+      expiresAt.getMinutes() + RESET_TOKEN_EXPIRATION_MINUTES,
+    );
+
+    const resetToken = this.resetTokenRepository.create({
+      userId: user.id,
+      tokenHash,
+      expiresAt,
+    });
+    await this.resetTokenRepository.save(resetToken);
+
+    await this.mailService.sendPasswordResetEmail(
+      user.email,
+      rawToken,
+    );
+
+    return { message: MSG.genericForgotPasswordMessage() };
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+    const tokenHash = crypto
+      .createHash('sha256')
+      .update(dto.token)
+      .digest('hex');
+
+    const resetToken = await this.resetTokenRepository.findOne({
+      where: { tokenHash, used: false },
+    });
+
+    if (!resetToken || resetToken.expiresAt < new Date()) {
+      throw new BadRequestException(MSG.invalidToken());
+    }
+
+    const hashedPassword = await this.hasher.hash(dto.password);
+
+    await this.userRepository.update(resetToken.userId, {
+      password: hashedPassword,
+    });
+
+    resetToken.used = true;
+    await this.resetTokenRepository.save(resetToken);
+
+    return { message: MSG.passwordUpdatedSuccessfully() };
   }
 
   /**

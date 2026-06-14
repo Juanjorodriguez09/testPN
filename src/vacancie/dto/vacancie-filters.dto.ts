@@ -5,6 +5,7 @@ import { MSG } from "../../common/helpers/validation-messages.helper";
 import { VacancieStatus } from "../enum/vacancie-status.enum";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Modality } from "../enum/modality.enum";
+import { IndustryType } from "../../company/enum/industry-type.enum";
 
 export class VacancieFiltersDto extends PaginationDto {
 
@@ -26,22 +27,27 @@ export class VacancieFiltersDto extends PaginationDto {
     @ApiProperty({ example: 'Ingeniero DevOps' })
     @IsString({ message: MSG.string('El título') })
     @IsOptional()
-    title!: string;
+    title?: string;
 
     @ApiProperty({ example: 1500000 })
     @IsPositive({ message: MSG.isPositive('El salario') })
     @IsNumber({}, { message: MSG.isNumber('El salario') })
     @Type(() => Number)
     @IsOptional()
-    salary!: number;
+    salary?: number;
 
     @ApiProperty({ example: 'Colombia' })
     @IsString({ message: MSG.string('La ubicación') })
     @IsOptional()
-    location!: string;
+    location?: string;
 
     @ApiProperty({ example: 'Remoto' })
     @IsEnum(Modality, { message: MSG.notValidValue('modalidad') })
     @IsOptional()
-    modality!: Modality;
+    modality?: Modality;
+
+    @ApiProperty({ example: IndustryType.ITServicesAndConsulting })
+    @IsEnum(IndustryType, { message: MSG.notValidValue('industria') })
+    @IsOptional()
+    industry?: IndustryType;
 }

@@ -89,6 +89,15 @@ export class VacancieFilterBuilder implements FilterBuilder<Vacancie, VacancieFi
         );
     }
 
+    if (filters.industry) {
+
+        queryBuilder.andWhere(
+            'company.industry = :industry', {
+                industry: filters.industry,
+            },
+        );
+    }
+
     return queryBuilder;
 
   }

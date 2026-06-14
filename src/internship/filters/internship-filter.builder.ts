@@ -24,9 +24,14 @@ export class InternshipFilterBuilder implements FilterBuilder<Internship, Intern
         'vacancie',
     );
 
-    queryBuilder.leftJoin(
+    queryBuilder.leftJoinAndSelect(
         'vacancie.company',
         'company',
+    );
+
+    queryBuilder.leftJoinAndSelect(
+        'student.user',
+        'user',
     );
 
     queryBuilder.leftJoin(

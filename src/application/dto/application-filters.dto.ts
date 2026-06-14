@@ -21,4 +21,9 @@ export class ApplicationFiltersDto extends PaginationDto {
     @IsOptional()
     @Type(() => Number)
     companyId?: number;
+
+    @ApiPropertyOptional({ example: true })
+    @IsOptional()
+    @Type(() => Boolean)
+    withoutInternship?: boolean;
 }

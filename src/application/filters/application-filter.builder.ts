@@ -57,6 +57,16 @@ export class ApplicationFilterBuilder implements FilterBuilder<Application, Appl
         );
     }
 
+    if (filters.withoutInternship) {
+
+        queryBuilder.leftJoin(
+            'application.internship',
+            'internship',
+        ).andWhere(
+            'internship.id IS NULL',
+        );
+    }
+
     return queryBuilder;
 
   }

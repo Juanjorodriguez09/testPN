@@ -10,7 +10,7 @@ export enum IndustryType {
     Banking                     = 'Banca',
     Biotechnology               = 'Biotecnología',
     BusinessConsulting          = 'Consultoría Empresarial',
-    CustomerService             = 'Servicio al Cliente',
+    CustomerService             = 'Servicio al cliente',
     Education                   = 'Educación',
     EnergyAndUtilities          = 'Energía y Servicios Públicos',
     Engineering                 = 'Ingeniería',

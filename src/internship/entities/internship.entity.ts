@@ -2,6 +2,7 @@ import { AfterLoad, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColu
 import { InternshipStatus } from "../enum/internship-status.enum";
 import { Application } from "../../application/entities/application.entity";
 import { InternshipUpdate } from "../../internship-update/entities/internship-update.entity";
+import { Expose } from "class-transformer";
 
 
 @Entity('internships')
@@ -35,6 +36,24 @@ export class Internship {
         (internshipUpdate) => internshipUpdate.internship
     )
     internshipUpdates?: InternshipUpdate[]
+
+    @Column('text', { nullable: true })
+    arlCertification?: string;
+
+    @Expose()
+    get arlCertificationUrl() {
+        if (this.arlCertification)
+            return `${process.env.HOST_URL ?? 'http://localhost:3000/api'}/files/${ this.arlCertification }`;
+    }
+
+    @Column('text', { nullable: true })
+    epsCertification?: string;
+
+    @Expose()
+    get epsCertificationUrl() {
+        if (this.epsCertification)
+            return `${process.env.HOST_URL ?? 'http://localhost:3000/api'}/files/${ this.epsCertification }`;
+    }
 
     @CreateDateColumn()
     createdAt!: Date;

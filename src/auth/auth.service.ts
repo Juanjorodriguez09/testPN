@@ -157,6 +157,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Envía correo para recuperación de contraseña y genera token
+   * 
+   * @param {ForgotPasswordDto} dto 
+   * @returns Mensaje de envío genérico
+   */
   async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({
       where: { email: dto.email },
@@ -199,6 +205,13 @@ export class AuthService {
     return { message: MSG.genericForgotPasswordMessage() };
   }
 
+
+  /**
+   * Resetea la contraseña a partir de un token
+   * 
+   * @param {ResetPasswordDto} dto 
+   * @returns Mensaje de restauración de contraseña exitoso
+   */
   async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
     const tokenHash = crypto
       .createHash('sha256')

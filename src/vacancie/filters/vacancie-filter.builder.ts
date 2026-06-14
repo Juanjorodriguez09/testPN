@@ -53,6 +53,51 @@ export class VacancieFilterBuilder implements FilterBuilder<Vacancie, VacancieFi
         );
     }
 
+    if (filters.title) {
+
+        queryBuilder.andWhere(
+            'LOWER(vacancie.title) LIKE LOWER(:title)', {
+                title: `%${filters.title}%`,
+            },
+        );
+    }
+
+    if (filters.salary) {
+
+        queryBuilder.andWhere(
+            'vacancie.salary >= :salary', {
+                salary: filters.salary,
+            },
+        );
+    }
+
+    if (filters.location) {
+
+        queryBuilder.andWhere(
+            'LOWER(vacancie.location) LIKE LOWER(:location)', {
+                location: `%${filters.location}%`,
+            },
+        );
+    }
+
+    if (filters.modality) {
+
+        queryBuilder.andWhere(
+            'vacancie.modality = :modality', {
+                modality: filters.modality,
+            },
+        );
+    }
+
+    if (filters.industry) {
+
+        queryBuilder.andWhere(
+            'company.industry = :industry', {
+                industry: filters.industry,
+            },
+        );
+    }
+
     return queryBuilder;
 
   }

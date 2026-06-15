@@ -4,6 +4,9 @@ import { FilterBuilder } from '../../common/interfaces/filter-builder.interface'
 import { Vacancie } from '../entities/vacancie.entity';
 import { VacancieFiltersDto } from '../dto/vacancie-filters.dto';
 import { Application } from '../../application/entities/application.entity';
+import { Student } from '../../student/entities/student.entity';
+import { Partnership } from '../../partnership/entities/partnership.entity';
+import { PartnershipStatus } from '../../partnership/enum/partnership-status.enum';
 
 
 @Injectable()
@@ -20,6 +23,47 @@ export class VacancieFilterBuilder implements FilterBuilder<Vacancie, VacancieFi
         'vacancie.skills',
         'skills',
     );
+
+    
+    if (filters.studentId) {
+        // Filtra por coincidencia de habilidades con un estudiante
+        queryBuilder.innerJoin('vacancie.skills', 'vacancieSkill')
+            .innerJoin(
+                'student_skills',
+                'studentSkill',
+                'studentSkill.skillId = vacancieSkill.id',
+            )
+            .andWhere(
+                'studentSkill.studentId = :studentId',
+                { studentId: filters.studentId },
+            )
+            .distinct(true);
+
+        // Filtra por convenio establecido con la universidad de un estudiante
+        const partnershipSubQuery = queryBuilder.subQuery()
+            .select('partnership.companyId')
+            .from(Student, 'student')
+            .innerJoin(
+                Partnership,
+                'partnership',
+                'partnership.universityId = student.universityId',
+            )
+            .where(
+                'student.id = :studentId',
+            )
+            .andWhere(
+                'partnership.status = :partnershipStatus',
+            )
+            .getQuery();
+
+        queryBuilder.andWhere(
+            `vacancie.companyId IN ${partnershipSubQuery}`,
+        )
+        .setParameter(
+            'partnershipStatus',
+            PartnershipStatus.Active,
+        );
+    }
 
     // Filtra para no mostrar las vacantes en las que el estudiante está ya postulado
     if (filters.notAppliedByStudentId) {

@@ -24,6 +24,11 @@ export class VacancieFiltersDto extends PaginationDto {
     @Type(() => Number)
     notAppliedByStudentId?: number;
 
+    @ApiPropertyOptional({ example: 1 })
+    @IsOptional()
+    @Type(() => Number)
+    studentId?: number;
+
     @ApiProperty({ example: 'Ingeniero DevOps' })
     @IsString({ message: MSG.string('El título') })
     @IsOptional()

@@ -26,8 +26,10 @@ export class SeedService {
    * Inserta las habilidades en la base de datos
    */
   private async insertNewSkills(): Promise<void> {
-    await this.skillRepository.clear();
-    await this.skillRepository.insert(skillsData);
+    await this.skillRepository.upsert(
+      skillsData,
+      ['name'],
+    );
   }
 
 }

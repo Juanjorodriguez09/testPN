@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Skill } from './entities/skill.entity';
 import { Repository } from 'typeorm';
@@ -54,6 +54,11 @@ export class SkillService {
    */
   async remove(id: number) {
     const skill = await this.findOne(id);
+
+    // Valida que no tenga registros asociados
+    if (skill.students) throw new ConflictException(MSG.cannotDelete('habilidad'))
+    if (skill.vacancies) throw new ConflictException(MSG.cannotDelete('habilidad'))
+
     await this.skillRepository.remove(skill);
   }
 }

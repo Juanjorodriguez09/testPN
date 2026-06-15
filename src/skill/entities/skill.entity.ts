@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Student } from "../../student/entities/student.entity";
+import { Vacancie } from "../../vacancie/entities/vacancie.entity";
 
 @Entity('skills')
 export class Skill {
@@ -12,4 +14,15 @@ export class Skill {
     @CreateDateColumn()
     createdAt!: Date;
 
+    @ManyToMany(
+        () => Student, 
+        student => student.skills
+    )
+    students?: Student[];
+
+    @ManyToMany(
+        () => Vacancie, 
+        vacancie => vacancie.skills
+    )
+    vacancies?: Vacancie[];
 }

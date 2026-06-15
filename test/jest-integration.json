@@ -2,7 +2,7 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "..",
   "testEnvironment": "node",
-  "testRegex": ".*\\.e2e-spec\\.ts$",
+  "testRegex": ".*\\.integration\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
@@ -15,13 +15,13 @@
     "!../src/**/enum/**",
     "!../src/**/interface/**"
   ],
+  "coverageDirectory": "../coverage/integration",
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/test/setup.ts"],
   "transformIgnorePatterns": [
     "/node_modules/(?!(uuid)/)"
   ],
-  "coverageDirectory": "../coverage/e2e",
-  "moduleNameMapper": {
-    "^src/(.*)$": "<rootDir>/../src/$1"
-  },
-  "setupFilesAfterEnv": ["<rootDir>/setup.ts"],
   "testTimeout": 30000
 }

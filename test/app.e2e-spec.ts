@@ -16,11 +16,14 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/common/career (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/common/career')
       .expect(200)
-      .expect('Hello World!');
+      .expect((res) => {
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toBeGreaterThan(0);
+      });
   });
 
   afterEach(async () => {

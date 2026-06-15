@@ -6,12 +6,14 @@ import { Vacancie } from './entities/vacancie.entity';
 import { CompanyModule } from '../company/company.module';
 import { CommonModule } from '../common/common.module';
 import { VacancieFilterBuilder } from './filters/vacancie-filter.builder';
+import { SkillModule } from '../skill/skill.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ Vacancie ]),
     CompanyModule,
-    CommonModule
+    CommonModule,
+    SkillModule
   ],
   controllers: [VacancieController],
   providers: [VacancieService, VacancieFilterBuilder],

@@ -16,6 +16,11 @@ export class VacancieFilterBuilder implements FilterBuilder<Vacancie, VacancieFi
         'company',
     );
 
+    queryBuilder.leftJoinAndSelect(
+        'vacancie.skills',
+        'skills',
+    );
+
     // Filtra para no mostrar las vacantes en las que el estudiante está ya postulado
     if (filters.notAppliedByStudentId) {
 

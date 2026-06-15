@@ -50,4 +50,7 @@ export const MSG = {
   cannotDelete  : (entity: string) => `No se puede eliminar el ${entity} porque tiene registros asociados`,
   cannotUpdate  : (entity: string) => `No se puede actualizar el ${entity}`,
   inactive      : (entity: string) => `El ${entity} se encuentra inactivo`,
+
+  // Específicas de negocio
+  studentAlreadyOnInternship: () => 'Este estudiante ya se encuentra desarrollando una pasantía',
 };

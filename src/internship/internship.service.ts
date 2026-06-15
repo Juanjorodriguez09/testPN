@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateInternshipDto } from './dto/create-internship.dto';
 import { UpdateInternshipDto } from './dto/update-internship.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +10,7 @@ import { ApplicationService } from '../application/application.service';
 import { InternshipFiltersDto } from './dto/internship-filters.dto';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { MSG } from '../common/helpers/validation-messages.helper';
+import { InternshipStatus } from './enum/internship-status.enum';
 
 @Injectable()
 export class InternshipService {
@@ -33,6 +34,10 @@ export class InternshipService {
 
     // Valida existencia de la postulación
     const application = await this.applicationService.findOne(applicationId);
+
+    if (internshipData.status === InternshipStatus.Active) {
+      await this.ensureNoActiveInternshipForStudent(application.student.id);
+    }
 
     // Crear la entidad pasantía con las relaciones asignadas
     const internship = this.internshipRepository.create({
@@ -83,6 +88,15 @@ export class InternshipService {
   async update(id: number, updateInternshipDto: UpdateInternshipDto) {
     const { applicationId, ...updateInternshipData } = updateInternshipDto;
 
+    if (updateInternshipData.status === InternshipStatus.Active) {
+      const currentInternship = await this.findOne(id);
+
+      await this.ensureNoActiveInternshipForStudent(
+        currentInternship.application.student.id,
+        id,
+      );
+    }
+
     const internship = await this.internshipRepository.preload({ id, ...updateInternshipData }); 
     if (!internship) throw new NotFoundException(MSG.notFoundById('pasantía'));
 
@@ -97,5 +111,30 @@ export class InternshipService {
   async remove(id: number) {
     const internship = await this.findOne(id);
     await this.internshipRepository.softRemove(internship);
+  }
+
+  /**
+   * Valida que un estudiante asociado a la postulación no se encuentre ya en una pasantía activa
+   * 
+   * @param {number} studentId 
+   * @param {number} excludeInternshipId 
+   */
+  private async ensureNoActiveInternshipForStudent( studentId: number, excludeInternshipId?: number ): Promise<void> {
+    const query = this.internshipRepository
+      .createQueryBuilder('internship')
+      .innerJoin('internship.application', 'application')
+      .innerJoin('application.student', 'student')
+      .where('student.id = :studentId', { studentId })
+      .andWhere('internship.status = :status', { status: InternshipStatus.Active });
+
+    if (excludeInternshipId) {
+      query.andWhere('internship.id != :excludeInternshipId', { excludeInternshipId });
+    }
+
+    const exists = await query.getExists();
+
+    if (exists) {
+      throw new ConflictException(MSG.studentAlreadyOnInternship());
+    }
   }
 }

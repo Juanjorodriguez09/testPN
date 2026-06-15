@@ -50,7 +50,8 @@ export class Vacancie {
 
     @ManyToMany(
         () => Skill, 
-        skill => skill.vacancies
+        skill => skill.vacancies,
+        { eager: true }
     )
     @JoinTable({
         name: 'vacancie_skills',

@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateVacancieDto } from './dto/create-vacancie.dto';
 import { UpdateVacancieDto } from './dto/update-vacancie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Vacancie } from './entities/vacancie.entity';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { CompanyService } from '../company/company.service';
@@ -10,6 +10,8 @@ import { MSG } from '../common/helpers/validation-messages.helper';
 import { VacancieFiltersDto } from './dto/vacancie-filters.dto';
 import { VacancieFilterBuilder } from './filters/vacancie-filter.builder';
 import { CommonService } from '../common/common.service';
+import { AssignSkillDto } from '../skill/dto/assign-skill.dto';
+import { Skill } from '../skill/entities/skill.entity';
 
 @Injectable()
 export class VacancieService {
@@ -20,6 +22,9 @@ export class VacancieService {
     private readonly companyService: CompanyService,
     private readonly commonService: CommonService,
     private readonly filterBuilder: VacancieFilterBuilder,
+    private readonly dataSource: DataSource,
+    @InjectRepository(Skill)
+    private readonly skillRepository: Repository<Skill>
   ) {}
 
   /**
@@ -100,4 +105,49 @@ export class VacancieService {
     const vacancie = await this.findOne(id);
     await this.vacancieRepository.softRemove(vacancie);
   }
+
+  /**
+     * Le asigna una habilidad a una vacante
+     * 
+     * @param {number} id 
+     * @param {AssignSkillDto} assignSkillDto 
+     * @returns 
+     */
+    async assignSkills(id: number, assignSkillDto: AssignSkillDto) {
+      const vacancie = await this.vacancieRepository.findOne({
+        where: { id },
+        relations: {
+          skills: true,
+        },
+      });
+  
+      if (!vacancie) throw new NotFoundException(MSG.notFoundById('vacante'));
+  
+      const skill = await this.skillRepository.findOneBy({id: assignSkillDto.skillId});
+  
+      if (!skill) throw new NotFoundException(MSG.notFoundById('habilidad'));
+  
+      const alreadyExists = vacancie.skills?.some(
+        skill => skill.id === assignSkillDto.skillId,
+      );
+  
+      if (alreadyExists) throw new ConflictException(MSG.alreadyAsiggn('habilidad'));
+  
+      vacancie.skills?.push(skill);
+  
+      return this.vacancieRepository.save(vacancie);
+    }
+  
+    /**
+     * Elimina una habilidad de una vacante
+     * 
+     * @param {number} id 
+     * @param {number} skillId 
+     */
+    async removeSkill(id: number, skillId: number) {
+      await this.dataSource.createQueryBuilder()
+        .relation(Vacancie, 'skills')
+        .of(id)
+        .remove(skillId);
+    }
 }

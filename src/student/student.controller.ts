@@ -43,7 +43,7 @@ export class StudentController {
 
   @Delete(':id/skills/:skillId')
   @Roles(Role.SUPER_ADMIN, Role.STUDENT)
-  remove(@Param('id') id: string, @Param('skillId') skillId: string) {
+  removeSkill(@Param('id') id: string, @Param('skillId') skillId: string) {
     return this.studentService.removeSkill(+id, +skillId);
   }
 }

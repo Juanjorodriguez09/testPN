@@ -5,6 +5,7 @@ import { UpdateVacancieDto } from './dto/update-vacancie.dto';
 import { Roles } from '../common/decorators';
 import { Role } from '../common/enums/role.enum';
 import { VacancieFiltersDto } from './dto/vacancie-filters.dto';
+import { AssignSkillDto } from '../skill/dto/assign-skill.dto';
 
 @Controller('vacancie')
 export class VacancieController {
@@ -39,5 +40,17 @@ export class VacancieController {
   @Roles(Role.COMPANY, Role.SUPER_ADMIN)
   remove(@Param('id') id: string) {
     return this.vacancieService.remove(+id);
+  }
+
+  @Post(':id/skills')
+  @Roles(Role.SUPER_ADMIN, Role.COMPANY)
+  assignSkills( @Param('id') id: string, @Body() assignSkillDto: AssignSkillDto, ) {
+    return this.vacancieService.assignSkills(+id, assignSkillDto);
+  }
+
+  @Delete(':id/skills/:skillId')
+  @Roles(Role.SUPER_ADMIN, Role.COMPANY)
+  removeSkill(@Param('id') id: string, @Param('skillId') skillId: string) {
+    return this.vacancieService.removeSkill(+id, +skillId);
   }
 }

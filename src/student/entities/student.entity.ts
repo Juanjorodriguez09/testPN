@@ -1,9 +1,10 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "../../user/entities/user.entity";
 import { Career } from "../enum/career.enum";
 import { University } from "../../university/entities/university.entity";
 import { Application } from "../../application/entities/application.entity";
 import { Expose } from "class-transformer";
+import { Skill } from "../../skill/entities/skill.entity";
 
 
 @Entity('students')
@@ -79,6 +80,24 @@ export class Student {
         (application) => application.student
     )
     applications?: Application[]
+
+    @ManyToMany(
+        () => Skill, 
+        skill => skill.students,
+        { eager: true }
+    )
+    @JoinTable({
+        name: 'student_skills',
+        joinColumn: {
+            name: 'studentId',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'skillId',
+            referencedColumnName: 'id',
+        },
+    })
+    skills?: Skill[];
 
     @CreateDateColumn()
     createdAt!: Date;

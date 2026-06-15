@@ -1,8 +1,9 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { VacancieStatus } from "../enum/vacancie-status.enum";
 import { Modality } from "../enum/modality.enum";
 import { Company } from "../../company/entities/company.entity";
 import { Application } from "../../application/entities/application.entity";
+import { Skill } from "../../skill/entities/skill.entity";
 
 @Entity('vacancies')
 export class Vacancie {
@@ -46,6 +47,23 @@ export class Vacancie {
         (application) => application.vacancie
     )
     applications?: Application[]
+
+    @ManyToMany(
+        () => Skill, 
+        skill => skill.vacancies
+    )
+    @JoinTable({
+        name: 'vacancie_skills',
+        joinColumn: {
+            name: 'vacancieId',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'skillId',
+            referencedColumnName: 'id',
+        },
+    })
+    skills?: Skill[];
 
     @CreateDateColumn()
     createdAt!: Date;

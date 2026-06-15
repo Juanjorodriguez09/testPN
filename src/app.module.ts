@@ -17,6 +17,8 @@ import { StorageModule } from './storage/storage.module';
 import { FilesModule } from './files/files.module';
 import { InternshipModule } from './internship/internship.module';
 import { InternshipUpdateModule } from './internship-update/internship-update.module';
+import { SkillModule } from './skill/skill.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -65,7 +67,11 @@ import { InternshipUpdateModule } from './internship-update/internship-update.mo
 
     InternshipModule,
 
-    InternshipUpdateModule
+    InternshipUpdateModule,
+
+    SkillModule,
+
+    SeedModule
 
   ],
   controllers: [],

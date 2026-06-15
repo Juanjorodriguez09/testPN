@@ -22,6 +22,7 @@ export const MSG = {
   // Unicidad y conflictos
   unique        : (field: string) => `Ya existe un registro con ese ${field}`,
   alreadyExists : (entity: string) => `El ${entity} ya existe`,
+  alreadyAsiggn : (entity: string) => `El registro de ${entity} ya está asignado`,
 
   // Búsqueda / existencia
   notFound      : (entity: string) => `${entity} no encontrado`,

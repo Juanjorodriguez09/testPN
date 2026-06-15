@@ -19,6 +19,11 @@ export class StudentFilterBuilder implements FilterBuilder<Student, StudentFilte
         'university',
     );
 
+    queryBuilder.leftJoinAndSelect(
+        'student.skills',
+        'skills',
+    );
+
     if (filters.universityId) {
 
         queryBuilder.andWhere(

@@ -7,12 +7,14 @@ import { UniversityModule } from '../university/university.module';
 import { CommonModule } from '../common/common.module';
 import { StudentFilterBuilder } from './filters/student-filter.builder';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
+import { SkillModule } from '../skill/skill.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ Student ]),
     UniversityModule,
-    CommonModule
+    CommonModule,
+    SkillModule
   ],
   exports: [
     StudentService,

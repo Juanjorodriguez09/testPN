@@ -3,7 +3,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './entities/student.entity';
-import { DataSource, EntityManager, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
@@ -12,6 +12,8 @@ import { CommonService } from '../common/common.service';
 import { StudentFilterBuilder } from './filters/student-filter.builder';
 import { StudentFiltersDto } from './dto/student-filters.dto';
 import { BcryptAdapter } from '../common/adapters/bcrypt.adapter';
+import { AssignSkillDto } from '../skill/dto/assign-skill.dto';
+import { Skill } from '../skill/entities/skill.entity';
 
 @Injectable()
 export class StudentService {
@@ -24,6 +26,8 @@ export class StudentService {
     private readonly filterBuilder: StudentFilterBuilder,
     private readonly dataSource: DataSource,
     private readonly hasher: BcryptAdapter,
+    @InjectRepository(Skill)
+    private readonly skillRepository: Repository<Skill>
   ) {}
 
   /**
@@ -123,6 +127,51 @@ export class StudentService {
   async remove(id: number) {
     const student = await this.findOne(id);
     await this.studentRepository.softRemove(student);
+  }
+
+  /**
+   * Le asigna una habilidad a un estudiante
+   * 
+   * @param {number} id 
+   * @param {AssignSkillDto} assignSkillDto 
+   * @returns 
+   */
+  async assignSkills(id: number, assignSkillDto: AssignSkillDto) {
+    const student = await this.studentRepository.findOne({
+      where: { id },
+      relations: {
+        skills: true,
+      },
+    });
+
+    if (!student) throw new NotFoundException(MSG.notFoundById('estudiante'));
+
+    const skill = await this.skillRepository.findOneBy({id: assignSkillDto.skillId});
+
+    if (!skill) throw new NotFoundException(MSG.notFoundById('habilidad'));
+
+    const alreadyExists = student.skills?.some(
+      skill => skill.id === assignSkillDto.skillId,
+    );
+
+    if (alreadyExists) throw new ConflictException(MSG.alreadyAsiggn('habilidad'));
+
+    student.skills?.push(skill);
+
+    return this.studentRepository.save(student);
+  }
+
+  /**
+   * Elimina una habilidad de un estudiante
+   * 
+   * @param {number} id 
+   * @param {number} skillId 
+   */
+  async removeSkill(id: number, skillId: number) {
+    await this.dataSource.createQueryBuilder()
+      .relation(Student, 'skills')
+      .of(id)
+      .remove(skillId);
   }
 
   /**

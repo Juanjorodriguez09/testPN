@@ -162,7 +162,7 @@ Setup file que:
 #### `TESTING.md`
 Guía completa de testing que incluye:
 - Estructura de tests
-- Comandos de testing (unitarios, E2E)
+- Comandos de testing (unitarios, integración)
 - Ejemplos de estructuras de tests
 - Uso de TestDataFactory y TestHelpers
 - Best practices
@@ -404,7 +404,7 @@ Si encuentras problemas:
 
 ##  Notas Importantes
 
-- Los tests E2E completos requieren una base de datos PostgreSQL configurada
+- Los tests de integración completos requieren una base de datos PostgreSQL configurada
 - Para desarrollo local, los tests unitarios no requieren base de datos
 - Los mocks están completamente configurados para ejecutar sin dependencias externas
 - La suite está lista para CI/CD (GitHub Actions, Jenkins, etc.)

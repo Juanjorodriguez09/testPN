@@ -1,6 +1,6 @@
 /**
- * Setup file for E2E tests
- * Ejecuta antes de todos los tests E2E
+ * Setup file for integration tests
+ * Ejecuta antes de todos los tests
  */
 
 import { existsSync, readFileSync } from 'node:fs';
@@ -40,7 +40,7 @@ for (const [key, value] of Object.entries({ ...defaultEnv, ...envValues })) {
   }
 }
 
-// Aumentar timeout para tests E2E
+// Aumentar timeout para tests de integración
 jest.setTimeout(30000);
 
 // Silenciar logs en tests (almacenar referencias originales para restaurar)

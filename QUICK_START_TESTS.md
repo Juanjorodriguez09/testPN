@@ -66,7 +66,7 @@ npm run test:integration -- --watch
 ### Archivos Relacionados
 - `test/backend.integration.spec.ts` - Suite principal de integración
 - `test/jest-integration.json` - Configuración Jest para integración
-- `test/jest-e2e.json` - Configuración Jest para E2E
+- `test/setup.ts` - Configuración global de tests
 
 ## Ver Cobertura
 

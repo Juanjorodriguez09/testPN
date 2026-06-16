@@ -19,19 +19,19 @@ show_help() {
     echo "  npm run test:watch              - Ejecutar tests en modo watch"
     echo "  npm run test:cov                - Ejecutar tests con cobertura"
     echo "  npm run test:debug              - Ejecutar tests en modo debug"
-    echo "  npm run test:e2e                - Ejecutar tests E2E"
+    echo "  npm run test:integration        - Ejecutar tests de integración"
     echo ""
     echo -e "${YELLOW}Comandos específicos:${NC}"
     echo ""
     echo "  npm run test -- auth.service.spec.ts"
     echo "  npm run test -- --testNamePattern=\"login\""
-    echo "  npm run test:e2e -- app.e2e-spec.ts"
+    echo "  npm run test:integration -- backend.integration.spec.ts"
     echo ""
     echo -e "${YELLOW}Scripts útiles:${NC}"
     echo ""
     echo "  ./scripts/test.sh all           - Ejecutar todos los tests"
     echo "  ./scripts/test.sh unit          - Solo tests unitarios"
-    echo "  ./scripts/test.sh e2e           - Solo tests E2E"
+    echo "  ./scripts/test.sh integration   - Solo tests de integración"
     echo "  ./scripts/test.sh auth          - Tests del módulo de autenticación"
     echo "  ./scripts/test.sh user          - Tests del módulo de usuario"
     echo "  ./scripts/test.sh student       - Tests del módulo de estudiante"
@@ -46,15 +46,15 @@ run_tests() {
         all)
             echo -e "${YELLOW}Ejecutando todos los tests...${NC}"
             npm run test
-            npm run test:e2e
+            npm run test:integration
             ;;
         unit)
             echo -e "${YELLOW}Ejecutando tests unitarios...${NC}"
             npm run test
             ;;
-        e2e)
-            echo -e "${YELLOW}Ejecutando tests E2E...${NC}"
-            npm run test:e2e
+        integration)
+            echo -e "${YELLOW}Ejecutando tests de integración...${NC}"
+            npm run test:integration
             ;;
         auth)
             echo -e "${YELLOW}Ejecutando tests de autenticación...${NC}"

@@ -43,7 +43,11 @@ for (const [key, value] of Object.entries({ ...defaultEnv, ...envValues })) {
 // Aumentar timeout para tests E2E
 jest.setTimeout(30000);
 
-// Silenciar logs en tests
+// Silenciar logs en tests (almacenar referencias originales para restaurar)
+const originalLog = console.log;
+const originalDebug = console.debug;
+const originalInfo = console.info;
+
 beforeAll(() => {
   global.console.log = jest.fn();
   global.console.debug = jest.fn();
@@ -52,5 +56,7 @@ beforeAll(() => {
 
 // Restaurar logs después de tests
 afterAll(() => {
-  jest.restoreAllMocks();
+  global.console.log = originalLog;
+  global.console.debug = originalDebug;
+  global.console.info = originalInfo;
 });

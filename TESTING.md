@@ -19,10 +19,11 @@ Este documento proporciona una guía completa para ejecutar y escribir tests en 
 │   └── ...
 └── test/
     ├── setup.ts                       # Configuración global de tests
-    ├── jest-e2e.json                  # Configuración de E2E
-    ├── app.e2e-spec.ts                # Tests E2E básicos
-    ├── app.e2e-complete.spec.ts       # Tests E2E completos
-    ├── modules.integration.spec.ts    # Tests de integración de módulos
+    ├── jest-integration.json          # Configuración Jest para integración
+    ├── backend.integration.spec.ts    # Tests de integración del backend
+    ├── auth.controller.spec.ts        # Tests de integración - Auth
+    ├── user.controller.spec.ts        # Tests de integración - User
+    ├── student.controller.spec.ts     # Tests de integración - Student
     ├── factories/
     │   └── test-data.factory.ts       # Fábrica de datos de prueba
     └── helpers/
@@ -52,16 +53,16 @@ npm run test -- auth.service.spec.ts
 npm run test -- --testNamePattern="login"
 ```
 
-### Tests E2E
+### Tests de Integración
 ```bash
-# Ejecutar todos los tests E2E
-npm run test:e2e
+# Ejecutar todos los tests de integración
+npm run test:integration
 
-# Ejecutar test E2E específico
-npm run test:e2e -- app.e2e-spec.ts
+# Ejecutar test de integración en modo watch
+npm run test:integration -- --watch
 
-# Ejecutar E2E con cobertura
-npm run test:e2e -- --coverage
+# Ejecutar integración con cobertura
+npm run test:integration -- --coverage
 ```
 
 ## Estructura de un Test Unitario
@@ -117,9 +118,9 @@ describe('UserService', () => {
 });
 ```
 
-## Estructura de un Test de Integración/E2E
+## Estructura de un Test de Integración
 
-### Ejemplo: AuthController.spec.ts
+### Ejemplo: AuthController.spec.ts (en test/)
 
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
@@ -289,15 +290,18 @@ it('should validate email format', async () => {
 });
 ```
 
-## Configuración de Base de Datos para E2E
+## Configuración de Base de Datos para Tests de Integración
 
-Para ejecutar tests E2E con una base de datos real:
+Para ejecutar tests de integración con una base de datos real:
 
-1. Crea un archivo `.env.test`:
+1. Crea un archivo `.env.test` o utiliza `.env`:
 ```
 NODE_ENV=test
 DB_HOST=localhost
 DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=konekt_pn_test
 DB_USERNAME=postgres
 DB_PASSWORD=postgres
 DB_NAME=konekt_pn_test

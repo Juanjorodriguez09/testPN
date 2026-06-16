@@ -6,7 +6,6 @@ Se ha creado una suite completa de tests automáticos para la aplicación Konekt
 
 - ✅ Tests unitarios para servicios
 - ✅ Tests de integración para controladores
-- ✅ Tests E2E (End-to-End)
 - ✅ Fábricas de datos de prueba
 - ✅ Helpers y utilidades reutilizables
 - ✅ Configuración de Jest optimizada
@@ -73,12 +72,36 @@ Se ha creado una suite completa de tests automáticos para la aplicación Konekt
 - ✅ Tests de endpoints DELETE `/student/:id/skills/:skillId`
 - ✅ Tests de manejo de roles
 
-### 3. Tests E2E (End-to-End)
+### 3. Tests de Integración
 
-#### `test/app.e2e-spec.ts`
-- Test básico de verificación
+#### `test/auth.controller.spec.ts`
+- ✅ Tests de endpoints POST `/auth/login`
+- ✅ Tests de endpoints POST `/auth/register-student`
+- ✅ Tests de endpoints POST `/auth/register-university`
+- ✅ Tests de endpoints POST `/auth/register-company`
+- ✅ Tests de endpoints POST `/auth/forgot-password`
+- ✅ Tests de endpoints POST `/auth/reset-password`
+- ✅ Tests de throttling (límite de 3 requests por minuto)
+- ✅ Tests de validación de entrada
 
-#### `test/app.e2e-complete.spec.ts`
+#### `test/user.controller.spec.ts`
+- ✅ Tests de endpoints POST `/user`
+- ✅ Tests de endpoints GET `/user`
+- ✅ Tests de endpoints GET `/user/:id`
+- ✅ Tests de endpoints PATCH `/user/:id`
+- ✅ Tests de endpoints DELETE `/user/:id`
+- ✅ Tests de validación de UUID
+- ✅ Tests de paginación
+
+#### `test/student.controller.spec.ts`
+- ✅ Tests de endpoints GET `/student`
+- ✅ Tests de endpoints GET `/student/:id`
+- ✅ Tests de endpoints PATCH `/student/:id`
+- ✅ Tests de endpoints POST `/student/:id/skills`
+- ✅ Tests de endpoints DELETE `/student/:id/skills/:skillId`
+- ✅ Tests de manejo de roles
+
+#### `test/backend.integration.spec.ts`
 - ✅ Tests de flujo completo de autenticación
 - ✅ Tests de gestión de usuarios
 - ✅ Tests de gestión de estudiantes
@@ -87,19 +110,6 @@ Se ha creado una suite completa de tests automáticos para la aplicación Konekt
 - ✅ Tests de control de acceso basado en roles (RBAC)
 - ✅ Tests de manejo de errores
 - ✅ Tests de validación de datos
-
-#### `test/modules.integration.spec.ts`
-- ✅ Tests de Company module
-- ✅ Tests de University module
-- ✅ Tests de Vacancies module
-- ✅ Tests de Applications module
-
-#### `test/company-university.integration.spec.ts`
-- ✅ Tests completos de Company operations
-- ✅ Tests completos de University operations
-- ✅ Tests de Skills management
-- ✅ Tests de Vacancy management
-- ✅ Tests de filtrado y paginación
 
 ### 4. Utilidades de Prueba
 
@@ -134,8 +144,8 @@ Configuración completa de Jest que incluye:
 - Detectar memory leaks
 - Force exit después de tests
 
-#### `test/jest-e2e.json`
-Configuración específica para tests E2E:
+#### `test/jest-integration.json`
+Configuración específica para tests de integración:
 - Soporte para TypeScript
 - Coverage reports separados
 - Increased timeouts (30s)
@@ -184,13 +194,13 @@ npm run test -- auth.service.spec.ts
 npm run test -- --testNamePattern="login"
 ```
 
-### Tests E2E
+### Tests de Integración
 ```bash
-# Todos los E2E
-npm run test:e2e
+# Todos los tests de integración
+npm run test:integration
 
-# E2E específico
-npm run test:e2e -- app.e2e-spec.ts
+# Test de integración específico
+npm run test:integration -- backend.integration.spec.ts
 ```
 
 ---
@@ -201,17 +211,17 @@ La suite incluye tests para los siguientes módulos:
 
 ### Módulos Cubiertos
 
-| Módulo | Unitarios | Integración | E2E |
-|--------|-----------|------------|-----|
-| Auth | ✅ | ✅ | ✅ |
-| User | ✅ | ✅ | ✅ |
-| Student | ✅ | ✅ | ✅ |
-| Company | - | ✅ | ✅ |
-| University | - | ✅ | ✅ |
-| Skills | - | ✅ | ✅ |
-| Vacancies | - | ✅ | ✅ |
-| Applications | - | ✅ | ✅ |
-| Internships | - | ✅ | ✅ |
+| Módulo | Unitarios | Integración |
+|--------|-----------|-------------|
+| Auth | ✅ | ✅ |
+| User | ✅ | ✅ |
+| Student | ✅ | ✅ |
+| Company | - | ✅ |
+| University | - | ✅ |
+| Skills | - | ✅ |
+| Vacancies | - | ✅ |
+| Applications | - | ✅ |
+| Internships | - | ✅ |
 
 ### Casos de Prueba por Módulo
 
@@ -265,9 +275,7 @@ La suite incluye tests para los siguientes módulos:
 - Validación de endpoints reales
 - Verificación de estructura de respuesta
 - Tests de códigos de estado HTTP
-
-### ✅ Tests E2E
-- Flujos completos de usuario
+- Flujos de usuario completos
 - Validación de negocio
 - Interacción entre módulos
 - Tests de seguridad (RBAC)

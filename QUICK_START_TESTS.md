@@ -14,14 +14,11 @@ npm run test:watch
 # Ver reporte de cobertura
 npm run test:cov
 
-# Ejecutar tests E2E
-npm run test:e2e
-
 # Ejecutar tests de integración del backend
 npm run test:integration
 ```
 
-##  Ejecutar Tests Específicos
+##  Ejecutar Tests Específicos
 
 ```bash
 # Test de un módulo específico
@@ -34,10 +31,7 @@ npm run test -- --testNamePattern="login"
 npm run test -- --testNamePattern="register"
 npm run test -- --testNamePattern="update"
 
-# Test de un archivo E2E
-npm run test:e2e -- app.e2e-spec.ts
-
-# Test de un archivo de integración
+# Test de integración específico
 npm run test:integration -- backend.integration.spec.ts
 ```
 
@@ -192,7 +186,7 @@ const futureDate = TimeHelpers.addDays(30);
 const pastDate = TimeHelpers.subtractHours(2);
 ```
 
-##  Solucionar Problemas
+## Ł Solucionar Problemas
 
 ### Tests fallan por timeout
 ```bash
@@ -206,10 +200,13 @@ testTimeout: 30000  // 30 segundos
 npm run test -- --clearCache
 ```
 
-### Tests de E2E fallan por BD
+### Tests de integración fallan por BD
 ```bash
-# Crear .env.test
+# Crear .env.test o usar .env
 cp .env.test.example .env.test
+
+# Asegurar que docker-compose está levantado
+docker-compose up -d
 
 # Configurar base de datos PostgreSQL
 # Asegurar que DB_HOST y credenciales sean correctas
@@ -228,7 +225,7 @@ npm install
 - Resumen de suite: [TESTS_SUMMARY.md](./TESTS_SUMMARY.md)
 - Ejemplos: Ver archivos `*.spec.ts`
 
-##  Workflow de Desarrollo
+## Workflow de Desarrollo
 
 1. **Desarrollo**
    ```bash
@@ -243,10 +240,10 @@ npm install
    npm run format
    ```
 
-3. **CI/CD**
+3. **Integración continua**
    ```bash
    npm run test:cov
-   npm run test:e2e
+   npm run test:integration
    ```
 
 ## Métricas
